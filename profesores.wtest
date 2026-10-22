@@ -1,0 +1,230 @@
+// Tests de mi módulo. Uso PisoDePrueba y AlumnoDePrueba para no depender
+// de lo que están haciendo Lucca y Manu.
+import wollok.game.*
+import profesores.*
+import proyectiles.*
+import soporteDePruebas.*
+
+describe "Persecución de profesores" {
+
+  method pisoLibre() = new PisoDePrueba(ancho = 6, alto = 6)
+
+  method alumnoEn(posicion) = new AlumnoDePrueba(position = posicion)
+
+  method perseguidorEn(posicion) {
+    const profesor = new Profesor(position = posicion, nombre = "Perseguidor", reaccion = reaccionOmar)
+    profesor.agregarComportamiento(new Perseguir())
+    return profesor
+  }
+
+  test "un perseguidor da un paso hacia el alumno" {
+    const piso = self.pisoLibre()
+    const alumno = self.alumnoEn(game.at(4, 0))
+    const profesor = self.perseguidorEn(game.at(0, 0))
+
+    profesor.actuar(alumno, piso)
+
+    assert.equals(game.at(1, 0), profesor.position())
+  }
+
+  test "rodea un obstáculo en vez de chocarse" {
+    const piso = self.pisoLibre()
+    piso.obstaculos().add(game.at(1, 0))
+    const alumno = self.alumnoEn(game.at(2, 0))
+    const profesor = self.perseguidorEn(game.at(0, 0))
+
+    profesor.actuar(alumno, piso)
+
+    assert.equals(game.at(0, 1), profesor.position())
+  }
+
+  test "si no hay camino se queda quieto" {
+    const piso = self.pisoLibre()
+    (0..5).forEach({ y => piso.obstaculos().add(game.at(1, y)) })
+    const alumno = self.alumnoEn(game.at(4, 0))
+    const profesor = self.perseguidorEn(game.at(0, 0))
+
+    profesor.actuar(alumno, piso)
+
+    assert.equals(game.at(0, 0), profesor.position())
+  }
+
+  test "un profesor congelado no se mueve" {
+    const piso = self.pisoLibre()
+    const alumno = self.alumnoEn(game.at(4, 0))
+    const profesor = self.perseguidorEn(game.at(0, 0))
+
+    profesor.congelar()
+    profesor.actuar(alumno, piso)
+
+    assert.that(profesor.estaCongelado())
+    assert.equals(game.at(0, 0), profesor.position())
+  }
+
+  test "con frecuencia cada 2 ticks se mueve solo en el segundo" {
+    const piso = self.pisoLibre()
+    const alumno = self.alumnoEn(game.at(4, 0))
+    const lento = new Profesor(position = game.at(0, 0), nombre = "Lento", reaccion = reaccionOmar)
+    lento.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new Perseguir()))
+
+    lento.actuar(alumno, piso)
+    assert.equals(game.at(0, 0), lento.position())
+
+    lento.actuar(alumno, piso)
+    assert.equals(game.at(1, 0), lento.position())
+  }
+
+  test "atrapa al alumno solo cuando comparten celda" {
+    const profesor = self.perseguidorEn(game.at(0, 0))
+
+    assert.notThat(profesor.atrapa(self.alumnoEn(game.at(1, 0))))
+    assert.that(profesor.atrapa(self.alumnoEn(game.at(0, 0))))
+  }
+}
+
+describe "Congelamiento con duración" {
+
+  method pisoLibre() = new PisoDePrueba(ancho = 6, alto = 6)
+
+  test "el congelamiento por ticks termina solo y después se mueve" {
+    const piso = self.pisoLibre()
+    const alumno = new AlumnoDePrueba(position = game.at(4, 0))
+    const profesor = new Profesor(position = game.at(0, 0), nombre = "Omar", reaccion = reaccionOmar)
+    profesor.agregarComportamiento(new Perseguir())
+
+    profesor.congelarPorTicks(2)
+    profesor.actuar(alumno, piso)
+    profesor.actuar(alumno, piso)
+
+    assert.notThat(profesor.estaCongelado())
+    assert.equals(game.at(0, 0), profesor.position())
+
+    profesor.actuar(alumno, piso)
+    assert.equals(game.at(1, 0), profesor.position())
+  }
+
+  test "el machete deja a Omar congelado los ticks que corresponden a 5 segundos" {
+    const omar = profesores.omar(game.at(0, 0))
+
+    omar.recibirMachete()
+
+    assert.that(omar.estaCongelado())
+    assert.equals(tiempos.ticks(5), omar.ticksDeCongelamiento())
+  }
+}
+
+describe "Reacciones de los profesores" {
+
+  method pisoLibre() = new PisoDePrueba(ancho = 6, alto = 6)
+
+  method profesorCon(reaccion, posicion) {
+    const profesor = new Profesor(position = posicion, nombre = "Prueba", reaccion = reaccion)
+    profesor.agregarComportamiento(new Perseguir())
+    return profesor
+  }
+
+  test "el machete congela a Omar" {
+    const omar = self.profesorCon(reaccionOmar, game.at(0, 0))
+
+    omar.recibirMachete()
+
+    assert.that(omar.estaCongelado())
+  }
+
+  test "el machete no le hace nada a Lettuce" {
+    const lettuce = self.profesorCon(reaccionLettuce, game.at(0, 0))
+
+    lettuce.recibirMachete()
+
+    assert.notThat(lettuce.estaCongelado())
+  }
+
+  test "Lettuce va hacia el celular en vez de hacia el alumno" {
+    const piso = self.pisoLibre()
+    const alumno = new AlumnoDePrueba(position = game.at(4, 0))
+    const lettuce = self.profesorCon(reaccionLettuce, game.at(0, 0))
+
+    lettuce.escuchar(game.at(0, 4))
+    lettuce.actuar(alumno, piso)
+
+    assert.equals(game.at(0, 1), lettuce.position())
+  }
+
+  test "Omar ignora el celular y sigue al alumno" {
+    const piso = self.pisoLibre()
+    const alumno = new AlumnoDePrueba(position = game.at(4, 0))
+    const omar = self.profesorCon(reaccionOmar, game.at(0, 0))
+
+    omar.escuchar(game.at(0, 4))
+    omar.actuar(alumno, piso)
+
+    assert.equals(game.at(1, 0), omar.position())
+  }
+
+  test "los gallitos van al celular" {
+    const piso = self.pisoLibre()
+    const alumno = new AlumnoDePrueba(position = game.at(4, 0))
+    const gallito = self.profesorCon(reaccionGallito, game.at(0, 0))
+
+    gallito.escuchar(game.at(0, 4))
+    gallito.actuar(alumno, piso)
+
+    assert.equals(game.at(0, 1), gallito.position())
+  }
+
+  test "Gallo no se mueve cuando suena el celular" {
+    const piso = self.pisoLibre()
+    const alumno = new AlumnoDePrueba(position = game.at(4, 0))
+    const gallo = new Profesor(position = game.at(0, 0), nombre = "Gallo", reaccion = reaccionGallo)
+    gallo.agregarComportamiento(quieto)
+
+    gallo.escuchar(game.at(0, 4))
+    gallo.actuar(alumno, piso)
+
+    assert.equals(game.at(0, 0), gallo.position())
+  }
+
+  test "Filipo ignora el machete y el celular" {
+    const piso = self.pisoLibre()
+    const alumno = new AlumnoDePrueba(position = game.at(4, 0))
+    const filipo = self.profesorCon(reaccionFilipo, game.at(0, 0))
+
+    filipo.recibirMachete()
+    filipo.escuchar(game.at(0, 4))
+    filipo.actuar(alumno, piso)
+
+    assert.notThat(filipo.estaCongelado())
+    assert.equals(game.at(1, 0), filipo.position())
+  }
+}
+
+describe "El machete acelera a Gallo y a los gallitos" {
+
+  method pisoLibre() = new PisoDePrueba(ancho = 6, alto = 6)
+
+  test "Gallo tira huevos más seguido" {
+    const piso = self.pisoLibre()
+    const alumno = new AlumnoDePrueba(position = game.at(5, 5))
+    const gallo = new Profesor(position = game.at(0, 0), nombre = "Gallo", reaccion = reaccionGallo)
+    gallo.agregarComportamiento(quieto)
+    gallo.agregarComportamiento(new CadaNTicks(n = 4, comportamiento = new LanzarProyectil(tipo = huevo)))
+
+    gallo.recibirMachete()
+    gallo.actuar(alumno, piso)
+    gallo.actuar(alumno, piso)
+
+    assert.equals(1, piso.proyectiles().cantidad())
+  }
+
+  test "el gallito da dos pasos por tick después del machete" {
+    const piso = self.pisoLibre()
+    const alumno = new AlumnoDePrueba(position = game.at(5, 0))
+    const gallito = new Profesor(position = game.at(0, 0), nombre = "Gallito", reaccion = reaccionGallito)
+    gallito.agregarComportamiento(new Perseguir())
+
+    gallito.recibirMachete()
+    gallito.actuar(alumno, piso)
+
+    assert.equals(game.at(2, 0), gallito.position())
+  }
+}

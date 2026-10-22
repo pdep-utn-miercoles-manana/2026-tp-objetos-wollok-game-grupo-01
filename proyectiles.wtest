@@ -1,0 +1,97 @@
+// Tests de proyectiles y de los profes que lanzan.
+import wollok.game.*
+import profesores.*
+import proyectiles.*
+import soporteDePruebas.*
+
+describe "Proyectiles y sus efectos" {
+
+  test "la tiza saca un corazón" {
+    const alumno = new AlumnoDePrueba(position = game.at(0, 0))
+
+    tiza.impactar(alumno)
+
+    assert.equals(2, alumno.vida())
+  }
+
+  test "el borrador saca dos corazones y congela dos segundos" {
+    const alumno = new AlumnoDePrueba(position = game.at(0, 0))
+
+    borrador.impactar(alumno)
+
+    assert.equals(1, alumno.vida())
+    assert.that(alumno.estaCongelado())
+    assert.equals(2, alumno.segundosDeCongelamiento())
+  }
+
+  test "el huevo saca un corazón" {
+    const alumno = new AlumnoDePrueba(position = game.at(0, 0))
+
+    huevo.impactar(alumno)
+
+    assert.equals(2, alumno.vida())
+  }
+
+  test "un proyectil avanza en su dirección" {
+    const proyectil = new Proyectil(position = game.at(0, 0), direccion = este, tipo = tiza)
+
+    proyectil.avanzar()
+
+    assert.equals(game.at(1, 0), proyectil.position())
+  }
+
+  test "el proyectil que toca al alumno lo lastima y se descarta" {
+    const piso = new PisoDePrueba(ancho = 5, alto = 5)
+    const alumno = new AlumnoDePrueba(position = game.at(2, 0))
+    piso.agregarProyectil(new Proyectil(position = game.at(1, 0), direccion = este, tipo = tiza))
+
+    piso.avanzarProyectiles(alumno)
+
+    assert.equals(2, alumno.vida())
+    assert.equals(0, piso.proyectiles().cantidad())
+  }
+
+  test "el proyectil que no toca sigue de largo" {
+    const piso = new PisoDePrueba(ancho = 5, alto = 5)
+    const alumno = new AlumnoDePrueba(position = game.at(0, 2))
+    piso.agregarProyectil(new Proyectil(position = game.at(0, 0), direccion = este, tipo = tiza))
+
+    piso.avanzarProyectiles(alumno)
+
+    assert.equals(3, alumno.vida())
+    assert.equals(1, piso.proyectiles().cantidad())
+  }
+}
+
+describe "Trayectorias" {
+
+  test "va hacia la derecha, izquierda, arriba o abajo" {
+    assert.equals(este, trayectorias.hacia(game.at(0, 0), game.at(3, 0)))
+    assert.equals(oeste, trayectorias.hacia(game.at(3, 0), game.at(0, 0)))
+    assert.equals(norte, trayectorias.hacia(game.at(0, 0), game.at(0, 3)))
+    assert.equals(sur, trayectorias.hacia(game.at(0, 3), game.at(0, 0)))
+  }
+
+  test "si está en diagonal elige el eje más largo" {
+    assert.equals(este, trayectorias.hacia(game.at(0, 0), game.at(2, 1)))
+    assert.equals(norte, trayectorias.hacia(game.at(0, 0), game.at(1, 2)))
+  }
+}
+
+describe "Un profesor que lanza" {
+
+  test "Omar lanza una tiza y le pega al alumno" {
+    const piso = new PisoDePrueba(ancho = 6, alto = 6)
+    const alumno = new AlumnoDePrueba(position = game.at(0, 4))
+    const omar = new Profesor(position = game.at(0, 0), nombre = "Omar", reaccion = reaccionOmar)
+    omar.agregarComportamiento(new CadaNTicks(n = 1, comportamiento = new LanzarProyectil(tipo = tiza)))
+
+    omar.actuar(alumno, piso)
+    assert.equals(1, piso.proyectiles().cantidad())
+
+    (1..4).forEach({ i => piso.avanzarProyectiles(alumno) })
+
+    assert.equals(2, alumno.vida())
+    assert.equals(0, piso.proyectiles().cantidad())
+  }
+}

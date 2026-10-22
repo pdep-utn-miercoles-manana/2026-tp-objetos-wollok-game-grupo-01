@@ -1,0 +1,213 @@
+import buscador.*
+import proyectiles.*
+
+// Mi parte del TP: los profesores y su "inteligencia".
+// La idea es que el Profesor no sepa qué hace. Le pasa el trabajo a sus
+// comportamientos (moverse, lanzar, quedarse quieto) y a su reacción
+// (qué hace cuando le tirás un machete o suena un celular).
+class Profesor {
+  var property position
+  const property nombre
+  const reaccion
+  const comportamientos = []
+  var congelado = false
+  var ticksCongelado = 0            // si es 0 y congelado, es un congelamiento sin duración
+  var senuelo = null                // la celda del celular que lo atrajo
+  var siguiendoSenuelo = false      // uso esta bandera porque comparar Position con null explota
+
+  // Los comportamientos los agrego desde afuera (ver la fábrica del final).
+  method agregarComportamiento(comportamiento) {
+    comportamientos.add(comportamiento)
+  }
+
+  // El piso me llama esto una vez por tick.
+  // Si está congelado no hace nada: solo descuenta el congelamiento.
+  method actuar(alumno, piso) {
+    if (congelado) {
+      self.descontarCongelamiento()
+    } else {
+      comportamientos.forEach({ c => c.actuar(self, alumno, piso) })
+      if (siguiendoSenuelo and position == senuelo) { siguiendoSenuelo = false }
+    }
+  }
+
+  method descontarCongelamiento() {
+    if (ticksCongelado > 0) {
+      ticksCongelado -= 1
+      if (ticksCongelado == 0) { congelado = false }
+    }
+  }
+
+  // Si hay un celular sonando va hacia ahí; si no, va al alumno.
+  method objetivo(alumno) = if (siguiendoSenuelo) senuelo else alumno.position()
+
+  // El piso pregunta esto para saber si tiene que reiniciar el nivel.
+  method atrapa(alumno) = position == alumno.position()
+
+  // Congelar "a mano" no tiene duración; lo uso en los tests.
+  method congelar() { congelado = true }
+
+  // Esto es lo que usa el machete: se congela una cantidad de ticks.
+  method congelarPorTicks(ticks) {
+    if (ticks > 0) {
+      congelado = true
+      ticksCongelado = ticks
+    }
+  }
+
+  method descongelar() {
+    congelado = false
+    ticksCongelado = 0
+  }
+
+  method estaCongelado() = congelado
+  method ticksDeCongelamiento() = ticksCongelado
+
+  method atraidoPor(posicion) {
+    senuelo = posicion
+    siguiendoSenuelo = true
+  }
+
+  // El machete no hace lo mismo con todos: a uno lo congela, a otro lo acelera.
+  // Le aviso a todos los comportamientos y cada uno ve qué hace.
+  method acelerar() { comportamientos.forEach({ c => c.acelerar() }) }
+
+  // Los estímulos externos los maneja la reacción de cada profe.
+  method recibirMachete() { reaccion.alMachete(self) }
+  method escuchar(posicion) { reaccion.alCelular(self, posicion) }
+}
+
+// ---------- Comportamientos ----------
+// Todos entienden actuar(profesor, alumno, piso) y acelerar().
+
+// Quieto no hace nada. Lo usan Gallo y Filipo.
+object quieto {
+  method actuar(profesor, alumno, piso) {}
+  method acelerar() {}
+}
+
+// Perseguir le pide el primer paso al BFS y se mueve.
+// `pasos` lo agregué para que el machete acelere a los gallitos.
+class Perseguir {
+  var property pasos = 1
+
+  method actuar(profesor, alumno, piso) {
+    (1..pasos).forEach({ i =>
+      profesor.position(buscadorDeCaminos.primerPasoHacia(profesor.position(), profesor.objetivo(alumno), piso))
+    })
+  }
+
+  method acelerar() { pasos += 1 }
+}
+
+// Decorador: envuelve otro comportamiento y lo deja actuar cada n ticks.
+// Así "velocidad baja" y "tira cada tanto" son números, no clases nuevas.
+class CadaNTicks {
+  var property n
+  const comportamiento
+  var ticks = 0
+
+  method actuar(profesor, alumno, piso) {
+    ticks += 1
+    if (ticks % n == 0) { comportamiento.actuar(profesor, alumno, piso) }
+  }
+
+  method acelerar() {
+    if (n > 1) { n = n / 2 }
+  }
+}
+
+// Arma el proyectil en la celda del profesor y se lo deja al piso.
+// La frecuencia la maneja el CadaNTicks que lo envuelve.
+class LanzarProyectil {
+  const tipo
+
+  method actuar(profesor, alumno, piso) {
+    piso.agregarProyectil(new Proyectil(
+      position = profesor.position(),
+      direccion = trayectorias.hacia(profesor.position(), alumno.position()),
+      tipo = tipo))
+  }
+
+  method acelerar() {}
+}
+
+// ---------- Reacciones ----------
+// Todas entienden alMachete(profesor) y alCelular(profesor, posicion).
+
+// Omar se congela 5 segundos y el celular lo ignora.
+object reaccionOmar {
+  method alMachete(profesor) { profesor.congelarPorTicks(tiempos.ticks(5)) }
+  method alCelular(profesor, posicion) {}
+}
+
+// Lettuce no siente el machete, pero el celular lo atrae.
+object reaccionLettuce {
+  method alMachete(profesor) {}
+  method alCelular(profesor, posicion) { profesor.atraidoPor(posicion) }
+}
+
+// Gallo no se mueve, pero con el machete tira huevos más seguido.
+object reaccionGallo {
+  method alMachete(profesor) { profesor.acelerar() }
+  method alCelular(profesor, posicion) {}
+}
+
+// Los gallitos van al celular y con el machete persiguen más rápido.
+object reaccionGallito {
+  method alMachete(profesor) { profesor.acelerar() }
+  method alCelular(profesor, posicion) { profesor.atraidoPor(posicion) }
+}
+
+// Filipo y Fermin ignoran todo.
+object reaccionFilipo {
+  method alMachete(profesor) {}
+  method alCelular(profesor, posicion) {}
+}
+
+// Paso segundos a ticks. Asumí 20 ticks por segundo (onTick cada 50 ms);
+// si Lucca usa otro intervalo, este es el único número que hay que tocar.
+object tiempos {
+  const property ticksPorSegundo = 20
+  method ticks(segundos) = segundos * ticksPorSegundo
+}
+
+// ---------- Armado de los profes ----------
+// Los armo acá para no tener un constructor gigante. Los números son de prueba,
+// después se ajustan jugando.
+
+object profesores {
+
+  method omar(posicion) {
+    const profesor = new Profesor(position = posicion, nombre = "Dr. Omar", reaccion = reaccionOmar)
+    profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new Perseguir()))
+    profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = tiza)))
+    return profesor
+  }
+
+  method lettuce(posicion) {
+    const profesor = new Profesor(position = posicion, nombre = "Ing. Lettuce", reaccion = reaccionLettuce)
+    profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new Perseguir()))
+    profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = borrador)))
+    return profesor
+  }
+
+  method gallo(posicion) {
+    const profesor = new Profesor(position = posicion, nombre = "Gallo", reaccion = reaccionGallo)
+    profesor.agregarComportamiento(quieto)
+    profesor.agregarComportamiento(new CadaNTicks(n = 8, comportamiento = new LanzarProyectil(tipo = huevo)))
+    return profesor
+  }
+
+  method gallito(posicion) {
+    const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito)
+    profesor.agregarComportamiento(new Perseguir())
+    return profesor
+  }
+
+  method filipo(posicion) {
+    const profesor = new Profesor(position = posicion, nombre = "Filipo", reaccion = reaccionFilipo)
+    profesor.agregarComportamiento(quieto)
+    return profesor
+  }
+}
