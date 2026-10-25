@@ -1,4 +1,4 @@
-import juego.*
+import november.*
 import piso.*
 
 describe "Tests de Juego" {
@@ -91,4 +91,12 @@ test "No avanza de piso si faltan parciales" {
 
     assert.equals(primerPiso, juego.pisoActual())
 }
+/*test "El juego reinicia el piso actual" {
+    juego.reiniciarConfiguracion()
+
+    const piso = new Piso(ancho = 15, largo = 10)
+    juego.agregarPiso(piso)
+
+    juego.reiniciarPisoActual()
+} */
 }
