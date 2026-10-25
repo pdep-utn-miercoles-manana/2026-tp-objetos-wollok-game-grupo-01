@@ -1,0 +1,16 @@
+import wollok.game.*
+import novemberIsComing.*
+import jugador.*
+
+program novemberIsComing {
+    game.title("November is Coming - UTN FRBA")
+    game.width(15)
+    game.height(10)
+    game.cellSize(50)
+    
+    // Le pedimos al objeto controlador que inicie el juego
+    juego.iniciar()
+
+    // Arranca el motor
+    game.start()
+}
