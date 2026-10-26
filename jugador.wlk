@@ -28,4 +28,13 @@ object jugador {
             position = position.right(velocidad)
         }
     }
+
+    var llaves = []
+
+method agregarLlave(unaLlave) {
+    if (!llaves.contains(unaLlave)) {
+        llaves.add(unaLlave)
+    }
+}
+
 }

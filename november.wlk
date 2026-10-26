@@ -15,6 +15,7 @@ object juego{
             keyboard.left().onPressDo({ jugador.moverIzquierda() })
             keyboard.right().onPressDo({ jugador.moverDerecha() })
             //self.iniciarActualizaciones()
+
         }
         method agregarPiso(unPiso) = pisos.add(unPiso)
         method cantidadDePisos() = pisos.size()

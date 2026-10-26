@@ -11,6 +11,8 @@ class Piso{
     const profesores = [] // no se puede poner como #{} ya que los gallitos son profesores y ellos son todos iguales
     const proyectiles = new Proyectiles()
     const parciales = []
+    const llaves = []
+    const escritorios = []
 
         method estaDentroDelMapa(posicion){
                 return self.requeridoDeAncho(posicion) &&  self.requeridoDeLargo(posicion)
@@ -55,6 +57,8 @@ class Piso{
             self.reiniciarProfesores()
             self.reiniciarProyectiles()
             self.reiniciarObstaculos()
+            self.reiniciarParciales()
+            self.reiniciarLlaves()
         }
         
         // NACHO: aca te dejo el mensaje que tiene que entender proyectiles 
@@ -70,6 +74,51 @@ class Piso{
                     .forEach({obstaculo => obstaculo.reiniciar()})
         }
 
+        //Sobre escritorio y llaves
+         
+        method agregarLlave(unaLlave) {
+        llaves.add(unaLlave)
+       }
+
+       method agregarEscritorio(unEscritorio) {
+       obstaculos.add(unEscritorio)
+       escritorios.add(unEscritorio)
+      }
+
+     method recogerLlaveEn(unaPosicion) {
+     llaves
+     .filter({ llave => llave.position() == unaPosicion })
+     .forEach({ llave => llave.agarrar() })
+     }
+
+    method interactuarEscritorioEn(unaPosicion, alumno) {
+    escritorios
+        .filter({ escritorio => escritorio.position() == unaPosicion })
+        .forEach({ escritorio => escritorio.interactuar(alumno) })
+     }
+
+    method interactuarCon(alumno) {
+    self.recogerLlaveEn(alumno.position())
+    self.recogerParcialEn(alumno.position())
+    self.interactuarEscritorioEn(alumno.position(), alumno)
+    }
+
+   method reiniciarLlaves() {
+    llaves.forEach({ llave => llave.reiniciar() })
+   }
+
+
+       //Busca los parciales ubicados en la posición indicada y los marca como recogidos.
+         method recogerParcialEn(unaPosicion) {
+         parciales
+        .filter({ parcial => parcial.position() == unaPosicion })
+        .forEach({ parcial => parcial.agarrar() })
+         }
+       
+       //Reinicia los parciales
+       method reiniciarParciales() {
+       parciales.forEach({ parcial => parcial.reiniciar() })
+       }
 
         // <----- Condicion para pasar de nivel -----> 
 
