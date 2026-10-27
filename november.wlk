@@ -16,6 +16,13 @@ object juego{
             keyboard.right().onPressDo({ jugador.moverDerecha() })
             //self.iniciarActualizaciones()
 
+
+            //Interaccion al presionar la tecla e, con escaleras, llaves y parciales.
+            keyboard.e().onPressDo({
+            self.pisoActual().interactuarCon(jugador)
+            self.pisoActual().interactuarEscaleraEn(
+            jugador.position(),jugador,self )})
+
         }
         method agregarPiso(unPiso) = pisos.add(unPiso)
         method cantidadDePisos() = pisos.size()

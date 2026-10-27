@@ -1,14 +1,10 @@
 import wollok.game.*
+import obstaculos.Obstaculos
 
-class Llave {
-    var property position
-    var posicionInicial = game.at(0, 0)
+class Llave inherits Obstaculos {
     var recogida = false
 
-    method initialize(unaPosicion) {
-        position = unaPosicion
-        posicionInicial = unaPosicion
-    }
+    method image() = "./assets/llaves.png"
 
     method fueRecogida() = recogida
 
@@ -19,12 +15,9 @@ class Llave {
         }
     }
 
-    method reiniciar() {
-        position = posicionInicial
-
-        if (recogida) {
-            recogida = false
-            game.addVisual(self)
-        }
+    override method reiniciar() {
+        super()
+        recogida = false
+        game.addVisual(self)
     }
 }

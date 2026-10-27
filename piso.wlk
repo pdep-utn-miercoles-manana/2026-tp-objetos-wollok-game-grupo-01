@@ -13,6 +13,7 @@ class Piso{
     const parciales = []
     const llaves = []
     const escritorios = []
+    const escaleras = []
 
         method estaDentroDelMapa(posicion){
                 return self.requeridoDeAncho(posicion) &&  self.requeridoDeLargo(posicion)
@@ -70,9 +71,19 @@ class Piso{
         }
         // MARIA : aca te dejo el mensaje que tiene que entender obstaculos
         method reiniciarObstaculos(){
-            obstaculos
+            obstaculos 
                     .forEach({obstaculo => obstaculo.reiniciar()})
         }
+
+       //Sobre escaleras
+       method agregarEscalera(unaEscalera) {
+       escaleras.add(unaEscalera)
+       obstaculos.add(unaEscalera)
+       }
+
+       method interactuarEscaleraEn(unaPosicion, alumno, unJuego) {
+       escaleras.filter({ escalera => escalera.position() == unaPosicion }).forEach({ escalera => escalera.interactuar(alumno, self, unJuego) })
+       }
 
         //Sobre escritorio y llaves
          

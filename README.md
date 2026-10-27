@@ -38,6 +38,17 @@ No hay ningún `if` preguntando por el tipo de nada.
   y mire `profesor.atrapa(alumno)`.
 - **Manu**: `alumno.position()`, `alumno.recibirGolpe(cantidad)` y `alumno.congelarPor(segundos)`.
 
+## Parte de Maria - Objetos interactivos y recursos
+
+Implemente la logica e integracion con Piso de :
+-Parciales, se pueden agarrar, cada parcial solo se puede tomar una vez.
+-Llaves, se recoge, desaparece del juego y puede volver a su posición inicial al reiniciar.  
+-Escritorio, se abre cuando el alumno tiene la llave y vuelve a cerrarse al reiniciar.
+-Bancos fijos y bancos moviles, heredan de Obstaculos; los móviles, además, pueden desplazarse.
+-Escaleras, permiten avanzar al siguiente piso, consultando las condiciones de avance propuestas en Piso.
+
+
+
 ## Parte de Lucca — pisos y progresión
 
 ### Implementado
