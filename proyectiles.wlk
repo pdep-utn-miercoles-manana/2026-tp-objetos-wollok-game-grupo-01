@@ -1,3 +1,5 @@
+import wollok.game.*
+
 // Los proyectiles. La gracia es que el proyectil no pregunta de qué tipo es:
 // el tipo sabe qué hacer cuando pega.
 
@@ -47,6 +49,8 @@ class Proyectil {
   method tocaA(alumno) = position == alumno.position()
 
   method impactar(alumno) { tipo.impactar(alumno) }
+
+  method image() = "./assets/proyectil.png"
 }
 
 // Tiza: saca 1.
@@ -72,7 +76,10 @@ object huevo {
 class Proyectiles {
   const property vivos = []
 
-  method agregar(proyectil) { vivos.add(proyectil) }
+  method agregar(proyectil) {
+    vivos.add(proyectil)
+    game.addVisual(proyectil)
+  }
 
   method cantidad() = vivos.size()
 
@@ -81,6 +88,25 @@ class Proyectiles {
 
     const impactados = vivos.filter({ p => p.tocaA(alumno) })
     impactados.forEach({ p => p.impactar(alumno) })
-    impactados.forEach({ p => vivos.remove(p) })
+    impactados.forEach({ p => self.sacar(p) })
+  }
+
+  // Cuando el proyectil sale del piso o se choca con una pared, no tiene sentido dejarlo vivo.
+  // Lucca la puede llamar desde Piso.avanzarProyectiles.
+  method descartarFueraDe(piso) {
+    vivos
+      .filter({ p => not piso.esTransitable(p.position()) })
+      .forEach({ p => self.sacar(p) })
+  }
+
+  // Al reiniciar el piso se van todos los proyectiles y también sus visuales.
+  method reiniciar() {
+    vivos.forEach({ p => game.removeVisual(p) })
+    vivos.clear()
+  }
+
+  method sacar(proyectil) {
+    vivos.remove(proyectil)
+    game.removeVisual(proyectil)
   }
 }
