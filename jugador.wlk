@@ -1,4 +1,5 @@
 import wollok.game.*
+import profesores.*   // para usar tiempos.ticks(segundos)
 
 object movilidadNormal {
     method arriba(j)    { j.irArriba() }
@@ -15,18 +16,27 @@ object movilidadInvertida {
 }
 
 object jugador {
-    var property position = game.at(7, 4)
+    const posicionInicial = game.at(7, 4)
+    const vidasIniciales = 3
+
+    var property position = posicionInicial
     var velocidad = 1
     var movilidad = movilidadNormal
     var pasoAlterno = false
+    const llaves = []
+
+    var vidas = vidasIniciales
+    var ticksCongelado = 0
 
     method image() = if (pasoAlterno) "./assets/jugadorDerecha2.png" else "./assets/jugadorDerecha1.png"
 
-    // Lo que llama juego.wlk: delegan en la movilidad actual
-    method moverArriba()    { movilidad.arriba(self) }
-    method moverAbajo()     { movilidad.abajo(self) }
-    method moverIzquierda() { movilidad.izquierda(self) }
-    method moverDerecha()   { movilidad.derecha(self) }
+    // Si está congelado, ignora las teclas
+    method moverArriba()    { if (self.puedeMoverse()) movilidad.arriba(self) }
+    method moverAbajo()     { if (self.puedeMoverse()) movilidad.abajo(self) }
+    method moverIzquierda() { if (self.puedeMoverse()) movilidad.izquierda(self) }
+    method moverDerecha()   { if (self.puedeMoverse()) movilidad.derecha(self) }
+
+    method puedeMoverse() = !self.estaCongelado()
 
     // Movimientos reales (con tus chequeos de borde)
     method irArriba() {
@@ -63,11 +73,45 @@ object jugador {
     method invertirControles()  { movilidad = movilidadInvertida }
     method restaurarControles() { movilidad = movilidadNormal }
 
-    // Para cuando se reinicia el nivel
-    method reiniciarEn(posicionInicial) {
+
+    // Lo llaman tiza, borrador y huevo. Las vidas no bajan de 0.
+    method recibirGolpe(cantidad) {
+        vidas = (vidas - cantidad).max(0)
+    }
+
+    method vidas() = vidas
+    method sinVidas() = vidas == 0
+
+    // Lo llama el borrador. Si ya estaba congelado, se queda con el tiempo mayor.
+    method congelarPor(segundos) {
+        ticksCongelado = ticksCongelado.max(tiempos.ticks(segundos))
+    }
+
+    method estaCongelado() = ticksCongelado > 0
+
+    // El piso lo llama una vez por tick (igual que a los profesores)
+    method actuar() {
+        if (self.estaCongelado()) {
+            ticksCongelado -= 1
+        }
+    }
+
+    // ---------- Llaves ----------
+    method agregarLlave(unaLlave) {
+        if (!llaves.contains(unaLlave)) {
+            llaves.add(unaLlave)
+        }
+    }
+
+    // ---------- Reinicio ----------
+    // Vuelve todo al estado inicial del piso
+    method reiniciar() {
         position = posicionInicial
-        self.restaurarControles()
+        movilidad = movilidadNormal
         velocidad = 1
         pasoAlterno = false
+        vidas = vidasIniciales
+        ticksCongelado = 0
+        llaves.clear()
     }
 }

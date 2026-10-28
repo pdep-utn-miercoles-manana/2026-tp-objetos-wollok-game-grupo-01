@@ -1,5 +1,6 @@
 import buscador.*
 import proyectiles.*
+import wollok.game.*
 
 // Mi parte del TP: los profesores y su "inteligencia".
 // La idea es que el Profesor no sepa qué hace. Le pasa el trabajo a sus
@@ -7,7 +8,9 @@ import proyectiles.*
 // (qué hace cuando le tirás un machete o suena un celular).
 class Profesor {
   var property position
+  var posicionInicial = null         // la copio en initialize para poder reiniciar el piso
   const property nombre
+  const property imagen = "./assets/profesor.png"
   const reaccion
   const comportamientos = []
   var congelado = false
@@ -18,6 +21,12 @@ class Profesor {
   // Los comportamientos los agrego desde afuera (ver la fábrica del final).
   method agregarComportamiento(comportamiento) {
     comportamientos.add(comportamiento)
+  }
+
+  // Ojo: si hago `const inicial = position`, Wollok lo recalcula y no guarda
+  // el valor. Por eso la posición inicial la copio acá, después de los named args.
+  method initialize() {
+    posicionInicial = position
   }
 
   // El piso me llama esto una vez por tick.
@@ -63,6 +72,18 @@ class Profesor {
   method estaCongelado() = congelado
   method ticksDeCongelamiento() = ticksCongelado
 
+  method image() = imagen
+
+  // Vuelve todo a como estaba cuando lo crearon. La usa el piso al reiniciar.
+  method reiniciar() {
+    position = posicionInicial
+    congelado = false
+    ticksCongelado = 0
+    senuelo = null
+    siguiendoSenuelo = false
+    comportamientos.forEach({ c => c.reiniciar() })
+  }
+
   method atraidoPor(posicion) {
     senuelo = posicion
     siguiendoSenuelo = true
@@ -78,12 +99,13 @@ class Profesor {
 }
 
 // ---------- Comportamientos ----------
-// Todos entienden actuar(profesor, alumno, piso) y acelerar().
+// Todos entienden actuar(profesor, alumno, piso), acelerar() y reiniciar().
 
 // Quieto no hace nada. Lo usan Gallo y Filipo.
 object quieto {
   method actuar(profesor, alumno, piso) {}
   method acelerar() {}
+  method reiniciar() {}
 }
 
 // Perseguir le pide el primer paso al BFS y se mueve.
@@ -98,14 +120,20 @@ class Perseguir {
   }
 
   method acelerar() { pasos += 1 }
+
+  method reiniciar() { pasos = 1 }
 }
 
 // Decorador: envuelve otro comportamiento y lo deja actuar cada n ticks.
 // Así "velocidad baja" y "tira cada tanto" son números, no clases nuevas.
 class CadaNTicks {
   var property n
+  var nInicial = 0
   const comportamiento
   var ticks = 0
+
+  // Guardo la frecuencia original para poder deshacer la aceleración del machete.
+  method initialize() { nInicial = n }
 
   method actuar(profesor, alumno, piso) {
     ticks += 1
@@ -114,6 +142,12 @@ class CadaNTicks {
 
   method acelerar() {
     if (n > 1) { n = n / 2 }
+  }
+
+  method reiniciar() {
+    n = nInicial
+    ticks = 0
+    comportamiento.reiniciar()
   }
 }
 
@@ -130,6 +164,7 @@ class LanzarProyectil {
   }
 
   method acelerar() {}
+  method reiniciar() {}
 }
 
 // ---------- Reacciones ----------
@@ -165,11 +200,12 @@ object reaccionFilipo {
   method alCelular(profesor, posicion) {}
 }
 
-// Paso segundos a ticks. Asumí 20 ticks por segundo (onTick cada 50 ms);
-// si Lucca usa otro intervalo, este es el único número que hay que tocar.
+// Paso segundos a ticks. El tick del juego tiene que durar lo mismo que dice acá:
+// si no, los 5 segundos de congelamiento de Omar no son 5 segundos.
 object tiempos {
-  const property ticksPorSegundo = 20
-  method ticks(segundos) = segundos * ticksPorSegundo
+  const property milisegundosPorTick = 200
+  method ticks(segundos) = segundos * 1000 / milisegundosPorTick
+  method ticksPorSegundo() = 1000 / milisegundosPorTick
 }
 
 // ---------- Armado de los profes ----------
@@ -178,36 +214,42 @@ object tiempos {
 
 object profesores {
 
+  // El profe ya queda en el juego: tiene position() e image(), así que se dibuja solo.
+  method agregarAlJuego(profesor) {
+    game.addVisual(profesor)
+    return profesor
+  }
+
   method omar(posicion) {
     const profesor = new Profesor(position = posicion, nombre = "Dr. Omar", reaccion = reaccionOmar)
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new Perseguir()))
     profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = tiza)))
-    return profesor
+    return self.agregarAlJuego(profesor)
   }
 
   method lettuce(posicion) {
     const profesor = new Profesor(position = posicion, nombre = "Ing. Lettuce", reaccion = reaccionLettuce)
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new Perseguir()))
     profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = borrador)))
-    return profesor
+    return self.agregarAlJuego(profesor)
   }
 
   method gallo(posicion) {
     const profesor = new Profesor(position = posicion, nombre = "Gallo", reaccion = reaccionGallo)
     profesor.agregarComportamiento(quieto)
     profesor.agregarComportamiento(new CadaNTicks(n = 8, comportamiento = new LanzarProyectil(tipo = huevo)))
-    return profesor
+    return self.agregarAlJuego(profesor)
   }
 
   method gallito(posicion) {
     const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito)
     profesor.agregarComportamiento(new Perseguir())
-    return profesor
+    return self.agregarAlJuego(profesor)
   }
 
   method filipo(posicion) {
     const profesor = new Profesor(position = posicion, nombre = "Filipo", reaccion = reaccionFilipo)
     profesor.agregarComportamiento(quieto)
-    return profesor
+    return self.agregarAlJuego(profesor)
   }
 }

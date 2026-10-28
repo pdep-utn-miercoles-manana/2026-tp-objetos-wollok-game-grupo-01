@@ -1,0 +1,102 @@
+import november.*
+import piso.*
+
+describe "Tests de Juego" {
+
+    test "Se puede agregar un piso al juego" {
+        const cantidadInicial = juego.cantidadDePisos()
+        const unPiso = new Piso(ancho = 10, largo = 8)
+
+        juego.agregarPiso(unPiso)
+
+        assert.equals(cantidadInicial + 1, juego.cantidadDePisos())
+    }
+    test "El juego reconoce el piso actual" {
+
+    juego.reiniciarConfiguracion()
+
+    const primerPiso = new Piso(ancho = 10, largo = 8)
+    const segundoPiso = new Piso(ancho = 15, largo = 10)
+
+    juego.agregarPiso(primerPiso)
+    juego.agregarPiso(segundoPiso)
+
+    assert.equals(primerPiso, juego.pisoActual())
+}
+test "Hay un siguiente piso disponible" {
+
+    juego.reiniciarConfiguracion()
+
+    const primerPiso = new Piso(ancho = 10, largo = 8)
+    const segundoPiso = new Piso(ancho = 15, largo = 10)
+
+    juego.agregarPiso(primerPiso)
+    juego.agregarPiso(segundoPiso)
+
+    assert.that(juego.haySiguientePiso())
+}
+
+test "No hay siguiente piso cuando estamos en el ultimo" {
+
+    juego.reiniciarConfiguracion()
+
+    const ultimoPiso = new Piso(ancho = 10, largo = 8)
+
+    juego.agregarPiso(ultimoPiso)
+
+    assert.notThat(juego.haySiguientePiso())
+}
+test "El juego avanza al siguiente piso si tiene todos los parciales" {
+    juego.reiniciarConfiguracion()
+
+    const primerPiso = new Piso(ancho = 10, largo = 8)
+    const segundoPiso = new Piso(ancho = 15, largo = 10)
+    const parcial = object {
+        method seAgarro() = true
+    }
+
+    primerPiso.agregarParcial(parcial)
+    juego.agregarPiso(primerPiso)
+    juego.agregarPiso(segundoPiso)
+    juego.avanzarEntrePiso()
+
+    assert.equals(segundoPiso, juego.pisoActual())
+}
+test "No avanza cuando esta en el ultimo piso" {
+    juego.reiniciarConfiguracion()
+
+    const ultimoPiso = new Piso(ancho = 10, largo = 8)
+
+    juego.agregarPiso(ultimoPiso)
+    juego.avanzarEntrePiso()
+
+    assert.equals(ultimoPiso, juego.pisoActual())
+}
+test "No avanza de piso si faltan parciales" {
+    juego.reiniciarConfiguracion()
+
+    const primerPiso = new Piso(ancho = 10, largo = 8)
+    const segundoPiso = new Piso(ancho = 15, largo = 10)
+
+    const parcial = object {
+        method seAgarro() = false
+    }
+
+    primerPiso.agregarParcial(parcial)
+
+    juego.agregarPiso(primerPiso)
+    juego.agregarPiso(segundoPiso)
+
+    juego.avanzarEntrePiso()
+
+    assert.equals(primerPiso, juego.pisoActual())
+}
+/*test "El juego reinicia el piso actual" {
+    juego.reiniciarConfiguracion()
+
+    const piso = new Piso(ancho = 15, largo = 10)
+    juego.agregarPiso(piso)
+
+    juego.reiniciarPisoActual()
+} */
+}

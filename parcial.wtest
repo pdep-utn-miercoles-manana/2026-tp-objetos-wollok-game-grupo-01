@@ -1,0 +1,46 @@
+
+import wollok.game.*
+import parcial.*
+
+describe "Parcial" {
+
+    test "un parcial comienza sin ser agarrado" {
+        const parcial = new Parcial(position = game.at(2, 3))
+
+        assert.notThat(parcial.seAgarro())
+    }
+
+    test "al agarrar un parcial queda marcado como agarrado" {
+        const parcial = new Parcial(position = game.at(2, 3))
+
+        parcial.agarrar()
+
+        assert.that(parcial.seAgarro())
+    }
+
+    test "un parcial agarrado no se puede recoger dos veces" {
+        const parcial = new Parcial(position = game.at(2, 3))
+
+        parcial.agarrar()
+        parcial.agarrar()
+
+        assert.that(parcial.seAgarro())
+    }
+
+    test "al reiniciar un parcial vuelve a estar disponible" {
+        const parcial = new Parcial(position = game.at(2, 3))
+
+        parcial.agarrar()
+        parcial.reiniciar()
+
+        assert.notThat(parcial.seAgarro())
+    }
+
+    test "reiniciar un parcial que no fue agarrado lo mantiene disponible" {
+        const parcial = new Parcial(position = game.at(2, 3))
+
+        parcial.reiniciar()
+
+        assert.notThat(parcial.seAgarro())
+    }
+}

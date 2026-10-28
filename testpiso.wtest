@@ -1,0 +1,146 @@
+// aca se van a ubicar todos los test pertinentes a los pisos 
+
+
+import wollok.game.*
+import piso.*
+import proyectiles.*
+
+describe "Tests de Piso" {
+
+    test "Es valida la posicion dentro del mapa" {
+        const piso = new Piso(ancho = 10, largo = 8)
+
+        assert.that(piso.estaDentroDelMapa(game.at(5, 4)))
+    }
+    test "No es valida la posicion dentro del mapa" {
+    const piso = new Piso(ancho = 10, largo = 8)
+
+    assert.notThat(piso.estaDentroDelMapa(game.at(10, 4)))
+    }   
+    test "es transitable una posicion sin obstaculos" {
+        const piso = new Piso(ancho = 10 , largo = 8)
+
+        assert.that(piso.esTransitable(game.at(5,4)))
+    }
+
+    test "No es transitable una posicion que tiene un obstaculo"{
+        const piso = new Piso(ancho = 10 , largo = 8)
+        const banco = object{
+            var property position = game.at(5,4)
+        }
+
+        piso.agregarObstaculo(banco)
+        assert.notThat(piso.esTransitable(game.at(5, 4)))
+    }
+    test "Tiene un profesor"{
+        const piso = new Piso(ancho = 10, largo = 8)
+        const profesor = object{} 
+        
+        piso.agregarProfesor(profesor)
+        assert.that(piso.tieneProfesor(profesor))
+    }
+    test "El piso hace actuar a todos sus profesores" {
+    const piso = new Piso(ancho = 10, largo = 8)
+
+    const profesorDePrueba = object {
+        var vecesQueActuo = 0
+
+        method actuar(unAlumno, unPiso)  
+        {vecesQueActuo += 1}
+        
+        method vecesQueActuo() = vecesQueActuo
+    }
+
+    piso.agregarProfesor(profesorDePrueba)
+    piso.actuarProfesores(null)
+
+    assert.equals(1, profesorDePrueba.vecesQueActuo()) 
+}
+    test "El piso puede agregar proyectiles" {
+    const piso = new Piso(ancho = 10, largo = 8)
+
+    piso.agregarProyectil(new Proyectil(
+        position = game.at(2, 3),
+        direccion = este,
+        tipo = tiza
+    ))
+
+    assert.equals(1, piso.cantidadDeProyectiles())
+}
+    test "El piso hace avanzar sus proyectiles" {
+    const piso = new Piso(ancho = 10, largo = 8)
+    const alumno = object {
+        var property position = game.at(8, 7)
+
+        method recibirGolpe(danio) {}
+    }
+    const proyectil = new Proyectil(
+        position = game.at(2, 3),
+        direccion = este,
+        tipo = tiza
+    )
+
+    piso.agregarProyectil(proyectil)
+    piso.avanzarProyectiles(alumno)
+    assert.equals(game.at(3, 3), proyectil.position())
+}
+    test "Al actualizar el piso actuan los profesores" {
+    const piso = new Piso(ancho = 10, largo = 8)
+    const profesor = object {
+        var property vecesQueActuo = 0
+
+        method actuar(unAlumno, unPiso) {
+            vecesQueActuo += 1
+        }
+    }
+    const alumno = object {
+        var property position = game.at(5, 5)
+
+        method recibirGolpe(danio) {}
+    }
+
+    piso.agregarProfesor(profesor)
+    piso.actualizar(alumno)
+
+    assert.equals(1, profesor.vecesQueActuo())
+}
+    test "El píso puede agregar parciales"{
+        const piso = new Piso(ancho = 10 , largo = 8)
+        const parcial = object{}
+
+        piso.agregarParcial(parcial)
+        assert.that(piso.tieneParcial(parcial))
+}
+
+test "El piso tiene todos los parciales agarrados" {
+    const piso = new Piso(ancho = 10, largo = 8)
+    const parcial1 = object {
+        method seAgarro() = true
+    }
+    const parcial2 = object {
+        method seAgarro() = true
+    }
+
+    piso.agregarParcial(parcial1)
+    piso.agregarParcial(parcial2)
+
+    assert.that(piso.tieneTodosLosParcialesAgarrados())
+}
+test "El piso no esta completo si falta agarrar un parcial" {
+    const piso = new Piso(ancho = 10, largo = 8)
+    const parcial1 = object {
+        method seAgarro() = true
+    }
+    const parcial2 = object {
+        method seAgarro() = false
+    }
+
+    piso.agregarParcial(parcial1)
+    piso.agregarParcial(parcial2)
+
+    assert.notThat(piso.tieneTodosLosParcialesAgarrados())
+}
+
+
+
+}

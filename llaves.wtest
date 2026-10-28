@@ -1,0 +1,40 @@
+import wollok.game.*
+import llave.*
+
+describe "Llave" {
+
+  test "una llave comienza sin ser recogida" {
+    const llave = new Llave(position = game.at(2, 3))
+
+    assert.notThat(llave.fueRecogida())
+  }
+
+  test "al agarrar la llave queda marcada como recogida" {
+    const llave = new Llave(position = game.at(2, 3))
+
+    llave.agarrar()
+
+    assert.that(llave.fueRecogida())
+  }
+
+  test "al reiniciar, una llave recogida vuelve a estar disponible" {
+    const posicionInicial = game.at(2, 3)
+    const llave = new Llave(position = posicionInicial)
+
+    llave.agarrar()
+    llave.reiniciar()
+
+    assert.notThat(llave.fueRecogida())
+    assert.equals(posicionInicial, llave.position())
+  }
+
+  test "reiniciar una llave no recogida conserva su posición" {
+    const posicionInicial = game.at(1, 4)
+    const llave = new Llave(position = posicionInicial)
+
+    llave.reiniciar()
+
+    assert.notThat(llave.fueRecogida())
+    assert.equals(posicionInicial, llave.position())
+  }
+}

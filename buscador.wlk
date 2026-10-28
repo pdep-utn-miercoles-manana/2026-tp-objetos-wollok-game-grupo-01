@@ -1,10 +1,12 @@
 // BFS para que los profes no se traben con las paredes.
 // Le pregunto al piso si una celda se puede pisar.
 //
-// Dos cosas que aprendí a la mala:
-// - Wollok no tiene while, así que la cola la proceso con recursión.
-// - No puedo comparar una Position con null (explota), así que si no hay
-//   camino devuelvo el origen y listo.
+// Wollok no tiene while, así que la cola la proceso con recursión.
+// No puedo comparar una Position con null (explota), así que si no hay
+// camino devuelvo el origen y listo.
+//
+// La cola la recorro con un índice en vez de ir sacando el primero: así no
+// copio la lista en cada paso y baja el trabajo por tick.
 
 object buscadorDeCaminos {
 
@@ -19,15 +21,15 @@ object buscadorDeCaminos {
   // Si ya está en el destino, o no hay camino, se queda donde está.
   method primerPasoHacia(origen, destino, piso) {
     if (origen == destino) { return origen }
-    return self.buscar([[origen, origen]], [origen], origen, destino, piso)
+    return self.buscar([[origen, origen]], 0, [origen], origen, destino, piso)
   }
 
   // La cola guarda pares [celda, primer paso desde el origen].
   // Cuando saco el destino, el primer paso guardado es la respuesta.
-  method buscar(pendientes, visitados, origen, destino, piso) {
-    if (pendientes.isEmpty()) { return origen }
+  method buscar(pendientes, indice, visitados, origen, destino, piso) {
+    if (indice >= pendientes.size()) { return origen }
 
-    const actual = pendientes.first()
+    const actual = pendientes.get(indice)
     const celda = actual.first()
     const primerPaso = actual.last()
 
@@ -37,6 +39,6 @@ object buscadorDeCaminos {
     nuevos.forEach({ v => visitados.add(v) })
     nuevos.forEach({ v => pendientes.add([v, if (celda == origen) v else primerPaso]) })
 
-    return self.buscar(pendientes.filter({ p => p != actual }), visitados, origen, destino, piso)
+    return self.buscar(pendientes, indice + 1, visitados, origen, destino, piso)
   }
 }

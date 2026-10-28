@@ -95,3 +95,29 @@ describe "Un profesor que lanza" {
     assert.equals(0, piso.proyectiles().cantidad())
   }
 }
+
+describe "Reinicio de proyectiles" {
+
+  test "reiniciar saca todos los proyectiles" {
+    const piso = new PisoDePrueba(ancho = 5, alto = 5)
+    piso.agregarProyectil(new Proyectil(position = game.at(0, 0), direccion = este, tipo = tiza))
+    piso.agregarProyectil(new Proyectil(position = game.at(0, 1), direccion = este, tipo = tiza))
+
+    assert.equals(2, piso.proyectiles().cantidad())
+
+    piso.proyectiles().reiniciar()
+
+    assert.equals(0, piso.proyectiles().cantidad())
+  }
+
+  test "el proyectil que se va del piso se descarta" {
+    const piso = new PisoDePrueba(ancho = 5, alto = 5)
+    const alumno = new AlumnoDePrueba(position = game.at(0, 0))
+    piso.agregarProyectil(new Proyectil(position = game.at(4, 0), direccion = este, tipo = tiza))
+
+    piso.avanzarProyectiles(alumno)
+    piso.proyectiles().descartarFueraDe(piso)
+
+    assert.equals(0, piso.proyectiles().cantidad())
+  }
+}

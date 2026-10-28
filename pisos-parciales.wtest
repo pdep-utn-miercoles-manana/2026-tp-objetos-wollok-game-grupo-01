@@ -1,0 +1,69 @@
+import wollok.game.*
+import profesores.*
+import parcial.*
+import piso.*
+
+describe "Integración de parciales con Piso" {
+
+  test "el piso puede agregar un parcial" {
+    const piso = new Piso(ancho = 5, largo = 5)
+    const parcial = new Parcial(position = game.at(2, 2))
+
+    piso.agregarParcial(parcial)
+
+    assert.that(piso.tieneParcial(parcial))
+  }
+
+  test "el piso recoge un parcial en la posición indicada" {
+    const piso = new Piso(ancho = 5, largo = 5)
+    const parcial = new Parcial(position = game.at(2, 2))
+
+    piso.agregarParcial(parcial)
+    piso.recogerParcialEn(game.at(2, 2))
+
+    assert.that(parcial.seAgarro())
+  }
+
+  test "el piso no recoge un parcial ubicado en otra posición" {
+    const piso = new Piso(ancho = 5, largo = 5)
+    const parcial = new Parcial(position = game.at(2, 2))
+
+    piso.agregarParcial(parcial)
+    piso.recogerParcialEn(game.at(3, 2))
+
+    assert.notThat(parcial.seAgarro())
+  }
+
+  test "el piso detecta si todos sus parciales fueron recogidos" {
+    const piso = new Piso(ancho = 5, largo = 5)
+    const parcial1 = new Parcial(position = game.at(1, 1))
+    const parcial2 = new Parcial(position = game.at(2, 2))
+
+    piso.agregarParcial(parcial1)
+    piso.agregarParcial(parcial2)
+
+    assert.notThat(piso.tieneTodosLosParcialesAgarrados())
+
+    piso.recogerParcialEn(game.at(1, 1))
+    assert.notThat(piso.tieneTodosLosParcialesAgarrados())
+
+    piso.recogerParcialEn(game.at(2, 2))
+    assert.that(piso.tieneTodosLosParcialesAgarrados())
+  }
+
+  test "el piso reinicia los parciales recogidos" {
+    const piso = new Piso(ancho = 5, largo = 5)
+    const parcial = new Parcial(position = game.at(2, 2))
+
+    piso.agregarParcial(parcial)
+    piso.recogerParcialEn(game.at(2, 2))
+
+    assert.that(parcial.seAgarro())
+
+    piso.reiniciarParciales()
+
+    assert.notThat(parcial.seAgarro())
+  }
+}
+
+

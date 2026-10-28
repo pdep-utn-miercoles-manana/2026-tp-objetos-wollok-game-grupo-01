@@ -228,3 +228,56 @@ describe "El machete acelera a Gallo y a los gallitos" {
     assert.equals(game.at(2, 0), gallito.position())
   }
 }
+
+describe "Reinicio de profesores" {
+
+  method pisoLibre() = new PisoDePrueba(ancho = 6, alto = 6)
+
+  test "vuelve a la posición inicial y se descongela" {
+    const piso = self.pisoLibre()
+    const alumno = new AlumnoDePrueba(position = game.at(4, 0))
+    const profesor = new Profesor(position = game.at(2, 0), nombre = "Prueba", reaccion = reaccionOmar)
+    profesor.agregarComportamiento(new Perseguir())
+
+    profesor.actuar(alumno, piso)
+    assert.equals(game.at(3, 0), profesor.position())
+
+    profesor.congelar()
+    profesor.reiniciar()
+
+    assert.equals(game.at(2, 0), profesor.position())
+    assert.notThat(profesor.estaCongelado())
+  }
+
+  test "deshace la aceleración del machete" {
+    const piso = self.pisoLibre()
+    const alumno = new AlumnoDePrueba(position = game.at(5, 0))
+    const gallito = new Profesor(position = game.at(0, 0), nombre = "Gallito", reaccion = reaccionGallito)
+    gallito.agregarComportamiento(new Perseguir())
+
+    gallito.recibirMachete()
+    gallito.actuar(alumno, piso)
+    assert.equals(game.at(2, 0), gallito.position())
+
+    gallito.reiniciar()
+    gallito.actuar(alumno, piso)
+
+    assert.equals(game.at(1, 0), gallito.position())
+  }
+
+  test "CadaNTicks vuelve a su frecuencia original" {
+    const piso = self.pisoLibre()
+    const alumno = new AlumnoDePrueba(position = game.at(5, 5))
+    const gallo = new Profesor(position = game.at(0, 0), nombre = "Gallo", reaccion = reaccionGallo)
+    gallo.agregarComportamiento(new CadaNTicks(n = 4, comportamiento = new LanzarProyectil(tipo = huevo)))
+
+    gallo.recibirMachete()   // la frecuencia pasa de 4 a 2
+    gallo.reiniciar()        // y acá vuelve a 4
+
+    (1..2).forEach({ i => gallo.actuar(alumno, piso) })
+    assert.equals(0, piso.proyectiles().cantidad())
+
+    (1..2).forEach({ i => gallo.actuar(alumno, piso) })
+    assert.equals(1, piso.proyectiles().cantidad())
+  }
+}
