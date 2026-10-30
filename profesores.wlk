@@ -221,34 +221,40 @@ object profesores {
   }
 
   method omar(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Dr. Omar", reaccion = reaccionOmar)
+    const profesor = new Profesor(position = posicion, nombre = "Dr. Omar", reaccion = reaccionOmar, imagen = "./assets/Dr Omar.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new Perseguir()))
     profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = tiza)))
     return self.agregarAlJuego(profesor)
   }
 
   method lettuce(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Ing. Lettuce", reaccion = reaccionLettuce)
+    const profesor = new Profesor(position = posicion, nombre = "Ing. Lettuce", reaccion = reaccionLettuce, imagen = "./assets/letucce.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new Perseguir()))
     profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = borrador)))
     return self.agregarAlJuego(profesor)
   }
 
   method gallo(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Gallo", reaccion = reaccionGallo)
+    const profesor = new Profesor(position = posicion, nombre = "Gallo", reaccion = reaccionGallo, imagen = "./assets/galo.png")
     profesor.agregarComportamiento(quieto)
     profesor.agregarComportamiento(new CadaNTicks(n = 8, comportamiento = new LanzarProyectil(tipo = huevo)))
     return self.agregarAlJuego(profesor)
   }
 
   method gallito(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito)
+    const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito, imagen = "./assets/galo.png")
     profesor.agregarComportamiento(new Perseguir())
     return self.agregarAlJuego(profesor)
   }
 
   method filipo(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Filipo", reaccion = reaccionFilipo)
+    const profesor = new Profesor(position = posicion, nombre = "Filipo", reaccion = reaccionFilipo, imagen = "./assets/filipo.png")
+    profesor.agregarComportamiento(quieto)
+    return self.agregarAlJuego(profesor)
+  }
+
+  method fermin(posicion) {
+    const profesor = new Profesor(position = posicion, nombre = "Fermin", reaccion = reaccionFilipo, imagen = "./assets/fermin.png")
     profesor.agregarComportamiento(quieto)
     return self.agregarAlJuego(profesor)
   }

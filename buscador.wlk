@@ -6,7 +6,8 @@
 // camino devuelvo el origen y listo.
 //
 // La cola la recorro con un índice en vez de ir sacando el primero: así no
-// copio la lista en cada paso y baja el trabajo por tick.
+// copio la lista en cada paso. Los visitados van en un Set para que contains
+// sea O(1) y el BFS no se ponga pesado con dos o más profesores.
 
 object buscadorDeCaminos {
 
@@ -21,13 +22,15 @@ object buscadorDeCaminos {
   // Si ya está en el destino, o no hay camino, se queda donde está.
   method primerPasoHacia(origen, destino, piso) {
     if (origen == destino) { return origen }
-    return self.buscar([[origen, origen]], 0, [origen], origen, destino, piso)
+    return self.buscar([[origen, origen]], 0, #{origen}, origen, destino, piso)
   }
 
   // La cola guarda pares [celda, primer paso desde el origen].
   // Cuando saco el destino, el primer paso guardado es la respuesta.
   method buscar(pendientes, indice, visitados, origen, destino, piso) {
     if (indice >= pendientes.size()) { return origen }
+    // Por las dudas: si algo raro hace crecer la cola, corto acá y no bloqueo el juego.
+    if (visitados.size() > 1000) { return origen }
 
     const actual = pendientes.get(indice)
     const celda = actual.first()
