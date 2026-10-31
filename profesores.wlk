@@ -108,21 +108,106 @@ object quieto {
   method reiniciar() {}
 }
 
-// Perseguir le pide el primer paso al BFS y se mueve.
-// `pasos` lo agregué para que el machete acelere a los gallitos.
 class Perseguir {
-  var property pasos = 1
+    var property pasos = 1
+    var busqueda = null
+    var buscando = false
 
   method actuar(profesor, alumno, piso) {
     (1..pasos).forEach({ i =>
-      profesor.position(buscadorDeCaminos.primerPasoHacia(profesor.position(), profesor.objetivo(alumno), piso))
+        self.intentarAvanzar(profesor, alumno, piso)
     })
   }
 
-  method acelerar() { pasos += 1 }
+    method intentarAvanzar(profesor, alumno, piso) {
+        const origen = profesor.position()
+        const destino = profesor.objetivo(alumno)
 
-  method reiniciar() { pasos = 1 }
+        if (origen == destino) {
+            buscando = false
+        } else {
+            if (buscadorDeCaminos.caminoDirectoLibre(origen, destino, piso)) {
+                buscando = false
+                profesor.position(self.siguienteDirecto(origen, destino))
+            } else {
+                if (not buscando) {
+                    busqueda = new BusquedaIncremental(
+                        origen = origen,
+                        destino = destino,
+                        piso = piso
+                    )
+                    buscando = true
+                }
+
+                if (not busqueda.estaFinalizada()) {
+                  busqueda.avanzar()
+                    }
+
+                  if (busqueda.estaFinalizada()) {
+                     if (busqueda.tienePasosPendientes()) {
+                  const siguiente = busqueda.consumirSiguientePaso()
+
+                  if (piso.esTransitable(siguiente) or siguiente == destino) {
+                  profesor.position(siguiente)
+                 } else {
+                      buscando = false
+                    }
+                    } else {
+                     buscando = false
+                    }
+                }
+            }
+        }
+    }
+
+    method siguienteDirecto(origen, destino) {
+        if (origen.x() != destino.x()) {
+            return if (origen.x() < destino.x())
+                origen.right(1)
+            else
+                origen.left(1)
+        }
+
+        return if (origen.y() < destino.y())
+            origen.up(1)
+        else
+            origen.down(1)
+    }
+
+    method acelerar() {
+        pasos += 1
+    }
+
+    method reiniciar() {
+        pasos = 1
+        buscando = false
+    }
 }
+
+
+
+
+
+
+
+
+
+
+// Perseguir le pide el primer paso al BFS y se mueve.
+// `pasos` lo agregué para que el machete acelere a los gallitos.
+// class Perseguir {
+//   var property pasos = 1
+
+//   method actuar(profesor, alumno, piso) {
+//     (1..pasos).forEach({ i =>
+//       profesor.position(buscadorDeCaminos.primerPasoHacia(profesor.position(), profesor.objetivo(alumno), piso))
+//     })
+//   }
+
+//   method acelerar() { pasos += 1 }
+
+//   method reiniciar() { pasos = 1 }
+// }
 
 // Decorador: envuelve otro comportamiento y lo deja actuar cada n ticks.
 // Así "velocidad baja" y "tira cada tanto" son números, no clases nuevas.

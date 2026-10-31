@@ -1,6 +1,7 @@
 import wollok.game.*
 import jugador.*
 import niveles.*
+import profesores.*
 object juego{
 
     const pisos = []
@@ -9,12 +10,13 @@ object juego{
         method iniciar() {
             niveles.configurarPrimerPiso()
             self.agregarPiso(niveles.primerPiso())
+            jugador.establecerPiso(self.pisoActual())
             game.addVisual(jugador)
             keyboard.up().onPressDo({ jugador.moverArriba() })
             keyboard.down().onPressDo({ jugador.moverAbajo() })
             keyboard.left().onPressDo({ jugador.moverIzquierda() })
             keyboard.right().onPressDo({ jugador.moverDerecha() })
-            //self.iniciarActualizaciones()
+            self.iniciarActualizaciones()
 
 
             //Interaccion al presionar la tecla e, con escaleras, llaves y parciales.
@@ -29,15 +31,26 @@ object juego{
         method pisoActual(){
             return pisos.get(numeroDePisoActual)
         }
-        method iniciarActualizaciones() {
-            const tick = game.tick(2000, {
-                self.pisoActual().actualizar(jugador)
-            }, false)
+       method iniciarActualizaciones() {
+        const tick = game.tick(tiempos.milisegundosPorTick(), {
+        self.pisoActual().actualizar(jugador)
+        jugador.actuar()
+        }, false)
 
-            tick.start()
+        tick.start()
         }
+        // method iniciarActualizaciones() {
+        //   const tick = game.tick(tiempos.milisegundosPorTick(), {
+        // self.pisoActual().actualizar(jugador)
+        // jugador.actuar()
+        // self.verificarDerrota()
+        //  }, false)
+
+        //     tick.start()
+        // }
         method reiniciarPisoActual() {
             self.pisoActual().reiniciarPiso()
+            jugador.reiniciar()
         }
         // mensaje creado para reiniciar estado de piso entre test
         method reiniciarConfiguracion() {
@@ -56,6 +69,12 @@ object juego{
         // mensaje creado para que no rompa al no haber otro piso
         method haySiguientePiso() {
              return numeroDePisoActual < pisos.size() - 1
+        }
+
+        method verificarDerrota() {
+            if (jugador.sinVidas()) {
+            self.reiniciarPisoActual()
+            }
         }
 
     

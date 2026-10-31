@@ -45,7 +45,10 @@ class Piso{
         // <---- Sobre Proyectiles ---->
         method agregarProyectil(unProyectil) = proyectiles.agregar(unProyectil)
         method cantidadDeProyectiles() = proyectiles.cantidad()
-        method avanzarProyectiles(unAlumno) = proyectiles.avanzar(unAlumno)
+        method avanzarProyectiles(unAlumno) {
+            proyectiles.avanzar(unAlumno)
+            proyectiles.descartarFueraDe(self)
+        }
 
 
         method actualizar(unAlumno) {
@@ -70,31 +73,31 @@ class Piso{
                 .forEach({profesor => profesor.reiniciar()})
         }
         // MARIA : aca te dejo el mensaje que tiene que entender obstaculos
-        method reiniciarObstaculos(){
+    method reiniciarObstaculos(){
             obstaculos 
                     .forEach({obstaculo => obstaculo.reiniciar()})
-        }
+    }
 
        //Sobre escaleras
-       method agregarEscalera(unaEscalera) {
+    method agregarEscalera(unaEscalera) {
        escaleras.add(unaEscalera)
        obstaculos.add(unaEscalera)
-       }
+    }
 
-       method interactuarEscaleraEn(unaPosicion, alumno, unJuego) {
-       escaleras.filter({ escalera => escalera.position() == unaPosicion }).forEach({ escalera => escalera.interactuar(alumno, self, unJuego) })
-       }
+    method interactuarEscaleraEn(unaPosicion, alumno, unJuego) {
+       escaleras.filter({ escalera => escalera.position() == unaPosicion }).forEach({ escalera => escalera.interactuar(alumno, unJuego) })
+    }
 
         //Sobre escritorio y llaves
          
-        method agregarLlave(unaLlave) {
+    method agregarLlave(unaLlave) {
         llaves.add(unaLlave)
-       }
+    }
 
-       method agregarEscritorio(unEscritorio) {
+    method agregarEscritorio(unEscritorio) {
        obstaculos.add(unEscritorio)
        escritorios.add(unEscritorio)
-      }
+    }
 
      method recogerLlaveEn(unaPosicion) {
      llaves
@@ -119,35 +122,37 @@ class Piso{
    }
 
 
-       //Busca los parciales ubicados en la posición indicada y los marca como recogidos.
-         method recogerParcialEn(unaPosicion) {
-         parciales
+    //Busca los parciales ubicados en la posición indicada y los marca como recogidos.
+    method recogerParcialEn(unaPosicion) {
+        parciales
         .filter({ parcial => parcial.position() == unaPosicion })
         .forEach({ parcial => parcial.agarrar() })
-         }
+    }
        
        //Reinicia los parciales
-       method reiniciarParciales() {
-       parciales.forEach({ parcial => parcial.reiniciar() })
-       }
+    method reiniciarParciales() {
+        parciales
+         .filter({ parcial => parcial.seAgarro() })
+         .forEach({ parcial => parcial.reiniciar() })
+    }
 
         // <----- Condicion para pasar de nivel -----> 
 
-        method agregarParcial(unParcial) = parciales.add(unParcial)
+    method agregarParcial(unParcial) = parciales.add(unParcial)
         
-        method tieneParcial(unParcial) {
+    method tieneParcial(unParcial) {
             return parciales.contains(unParcial)
-        }
-        method tieneTodosLosParcialesAgarrados(){
-            return self.noHayParcialesEnElPiso() && self.quedaAlgunParcial()
-        }
-        method noHayParcialesEnElPiso(){
+    }
+    method tieneTodosLosParcialesAgarrados(){
+        return self.noHayParcialesEnElPiso() && self.quedaAlgunParcial()
+    }
+    method noHayParcialesEnElPiso(){
             return parciales
                 .all({parcial => parcial.seAgarro()})
-        }
-        method quedaAlgunParcial(){
+    }
+    method quedaAlgunParcial(){
             return !(parciales.isEmpty())
-        }
+    }
 
 
 }       

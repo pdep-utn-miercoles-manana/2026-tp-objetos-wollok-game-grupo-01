@@ -24,6 +24,11 @@ object jugador {
     var movilidad = movilidadNormal
     var pasoAlterno = false
     const llaves = []
+    var pisoActual = null
+
+        method establecerPiso(unPiso) {
+            pisoActual = unPiso
+    }
 
     var vidas = vidasIniciales
     var ticksCongelado = 0
@@ -38,32 +43,32 @@ object jugador {
 
     method puedeMoverse() = !self.estaCongelado()
 
-    // Movimientos reales (con tus chequeos de borde)
-    method irArriba() {
-        if (position.y() < game.height() - 1) {
-            position = position.up(velocidad)
-            self.alternarSprite()
-        }
+    // Movimientos reales (con tus chequeos de borde y si hay obstaculos)
+   method irArriba() {
+    if (pisoActual.esTransitable(position.up(velocidad))) {
+        position = position.up(velocidad)
+        self.alternarSprite()
     }
+}
 
     method irAbajo() {
-        if (position.y() > 0) {
-            position = position.down(velocidad)
-            self.alternarSprite()
+    if (pisoActual.esTransitable(position.down(velocidad))) {
+        position = position.down(velocidad)
+        self.alternarSprite()
         }
     }
 
     method irIzquierda() {
-        if (position.x() > 0) {
-            position = position.left(velocidad)
-            self.alternarSprite()
+    if (pisoActual.esTransitable(position.left(velocidad))) {
+        position = position.left(velocidad)
+        self.alternarSprite()
         }
     }
 
     method irDerecha() {
-        if (position.x() < game.width() - 1) {
-            position = position.right(velocidad)
-            self.alternarSprite()
+    if (pisoActual.esTransitable(position.right(velocidad))) {
+        position = position.right(velocidad)
+        self.alternarSprite()
         }
     }
 

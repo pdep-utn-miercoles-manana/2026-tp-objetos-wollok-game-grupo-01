@@ -58,4 +58,19 @@ describe "Buscador de caminos" {
 
     assert.that(paso.x() >= 0 and paso.x() < 5 and paso.y() >= 0 and paso.y() < 5)
   }
+  test "La busqueda incremental rodea obstaculos" {
+    const piso = self.pisoLibre()
+    piso.obstaculos().add(game.at(1, 0))
+
+    const busqueda = new BusquedaIncremental(
+        origen = game.at(0, 0),
+        destino = game.at(2, 0),
+        piso = piso
+    )
+
+    (1..10).forEach({ i => busqueda.avanzar() })
+
+    assert.that(busqueda.estaFinalizada())
+    assert.equals(game.at(0, 1), busqueda.resultado())
+}
 }
