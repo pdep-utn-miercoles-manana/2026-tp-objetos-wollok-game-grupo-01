@@ -1,5 +1,7 @@
+import wollok.game.* 
 import profesores.*
 import proyectiles.*
+import obstaculos.*
 /*Parte Pisos (Lucca): Mi parte consiste en modelar los pisos, 
 la progresion entre niveles y las "mecanicas especiales" */
 
@@ -11,9 +13,11 @@ class Piso{
     const profesores = [] // no se puede poner como #{} ya que los gallitos son profesores y ellos son todos iguales
     const proyectiles = new Proyectiles()
     const parciales = []
-    const llaves = []
+    const llaves = [] 
     const escritorios = []
     const escaleras = []
+    const cafes = []
+    const panfletos = []
 
         method estaDentroDelMapa(posicion){
                 return self.requeridoDeAncho(posicion) &&  self.requeridoDeLargo(posicion)
@@ -32,7 +36,12 @@ class Piso{
              return  obstaculos
                         .any({obstaculo => obstaculo.position() == unaPosicion})
         }
-        method agregarObstaculo(unObstaculo) = obstaculos.add(unObstaculo)
+            // Agregar obstáculos y mostrarlos en el tablero
+            method agregarObstaculo(unObstaculo) {
+            obstaculos.add(unObstaculo)
+            game.addVisual(unObstaculo)
+        }
+
         method agregarProfesor(unPorfesor) = profesores.add(unPorfesor)
         method tieneProfesor(unProfesor){
              return profesores.contains(unProfesor)
@@ -60,6 +69,8 @@ class Piso{
             self.reiniciarObstaculos()
             self.reiniciarParciales()
             self.reiniciarLlaves()
+            self.reiniciarCafes()
+            self.reiniciarPanfletos()
         }
         
         // NACHO: aca te dejo el mensaje que tiene que entender proyectiles 
@@ -71,29 +82,32 @@ class Piso{
         }
         // MARIA : aca te dejo el mensaje que tiene que entender obstaculos
         method reiniciarObstaculos(){
-            obstaculos 
-                    .forEach({obstaculo => obstaculo.reiniciar()})
+            obstaculos.forEach({obstaculo => obstaculo.reiniciar()})
         }
 
-       //Sobre escaleras
-       method agregarEscalera(unaEscalera) {
-       escaleras.add(unaEscalera)
-       obstaculos.add(unaEscalera)
-       }
+        // Sobre escaleras
+        method agregarEscalera(unaEscalera) {
+        escaleras.add(unaEscalera)
+        obstaculos.add(unaEscalera)
+        game.addVisual(unaEscalera)
+        } 
 
        method interactuarEscaleraEn(unaPosicion, alumno, unJuego) {
-       escaleras.filter({ escalera => escalera.position() == unaPosicion }).forEach({ escalera => escalera.interactuar(alumno, self, unJuego) })
+       escaleras.filter({ escalera => escalera.position() == unaPosicion })
+       .forEach({ escalera => escalera.interactuar(alumno, self, unJuego) })
        }
 
         //Sobre escritorio y llaves
          
         method agregarLlave(unaLlave) {
         llaves.add(unaLlave)
+        game.addVisual(unaLlave)
        }
 
        method agregarEscritorio(unEscritorio) {
        obstaculos.add(unEscritorio)
        escritorios.add(unEscritorio)
+       game.addVisual(unEscritorio)
       }
 
      method recogerLlaveEn(unaPosicion) {
@@ -101,6 +115,7 @@ class Piso{
      .filter({ llave => llave.position() == unaPosicion })
      .forEach({ llave => llave.agarrar() })
      }
+
 
     method interactuarEscritorioEn(unaPosicion, alumno) {
     escritorios
@@ -111,13 +126,46 @@ class Piso{
     method interactuarCon(alumno) {
     self.recogerLlaveEn(alumno.position())
     self.recogerParcialEn(alumno.position())
+    self.recogerCafeEn(alumno.position(), alumno)
+    self.recogerPanfletoEn(alumno.position(), alumno)
     self.interactuarEscritorioEn(alumno.position(), alumno)
+
     }
+
 
    method reiniciarLlaves() {
     llaves.forEach({ llave => llave.reiniciar() })
    }
+   
+   method reiniciarCafes() {
+   cafes.forEach({ cafe => cafe.reiniciar() })
+   }
 
+   method reiniciarPanfletos() {
+   panfletos.forEach({ panfleto => panfleto.reiniciar() })
+   }
+
+    method agregarCafe(unCafe) {
+    cafes.add(unCafe)
+    game.addVisual(unCafe)
+   }
+
+    method agregarPanfleto(unPanfleto) {
+    panfletos.add(unPanfleto)
+    game.addVisual(unPanfleto)
+   }
+
+    method recogerCafeEn(unaPosicion, alumno) {
+    cafes
+        .filter({ cafe => cafe.position() == unaPosicion })
+        .forEach({ cafe => cafe.usar(alumno) })
+  }
+
+  method recogerPanfletoEn(unaPosicion, alumno) {
+    panfletos
+        .filter({ panfleto => panfleto.position() == unaPosicion })
+        .forEach({ panfleto => panfleto.usar(alumno) })
+  }
 
        //Busca los parciales ubicados en la posición indicada y los marca como recogidos.
          method recogerParcialEn(unaPosicion) {

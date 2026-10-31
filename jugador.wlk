@@ -1,5 +1,6 @@
 import wollok.game.*
 import profesores.*   // para usar tiempos.ticks(segundos)
+import november.*
 
 object movilidadNormal {
     method arriba(j)    { j.irArriba() }
@@ -23,10 +24,30 @@ object jugador {
     var velocidad = 1
     var movilidad = movilidadNormal
     var pasoAlterno = false
-    const llaves = []
+    var pendrive = null
 
     var vidas = vidasIniciales
     var ticksCongelado = 0
+
+    method guardarPendrive(unPendrive) {
+    pendrive = unPendrive
+    }
+
+    method tienePendrive() = pendrive != null
+
+    method usarPendrive(computadora) {
+    if (self.tienePendrive()) {
+        pendrive.usar(computadora)
+        pendrive = null
+    }
+   }
+    method verificarInteraccion() {
+    juego.pisoActual().interactuarCon(self)
+   }
+    method recuperarCorazon() {
+    vidas = (vidas + 1).min(vidasIniciales)
+    }
+
 
     method image() = if (pasoAlterno) "./assets/jugadorDerecha2.png" else "./assets/jugadorDerecha1.png"
 
@@ -43,6 +64,7 @@ object jugador {
         if (position.y() < game.height() - 1) {
             position = position.up(velocidad)
             self.alternarSprite()
+            self.verificarInteraccion()
         }
     }
 
@@ -50,6 +72,7 @@ object jugador {
         if (position.y() > 0) {
             position = position.down(velocidad)
             self.alternarSprite()
+            self.verificarInteraccion()
         }
     }
 
@@ -57,6 +80,7 @@ object jugador {
         if (position.x() > 0) {
             position = position.left(velocidad)
             self.alternarSprite()
+            self.verificarInteraccion()
         }
     }
 
@@ -64,6 +88,7 @@ object jugador {
         if (position.x() < game.width() - 1) {
             position = position.right(velocidad)
             self.alternarSprite()
+            self.verificarInteraccion()
         }
     }
 
@@ -95,14 +120,7 @@ object jugador {
             ticksCongelado -= 1
         }
     }
-
-    // ---------- Llaves ----------
-    method agregarLlave(unaLlave) {
-        if (!llaves.contains(unaLlave)) {
-            llaves.add(unaLlave)
-        }
-    }
-
+    
     // ---------- Reinicio ----------
     // Vuelve todo al estado inicial del piso
     method reiniciar() {
@@ -112,6 +130,5 @@ object jugador {
         pasoAlterno = false
         vidas = vidasIniciales
         ticksCongelado = 0
-        llaves.clear()
     }
 }

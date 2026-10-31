@@ -1,7 +1,8 @@
+import wollok.game.*
 import obstaculos.Obstaculos
 
 class BancosFijos inherits Obstaculos {
 
-    method image() = "./assets/sillas.png"
+    method image() = "sillas.png"
 
 }

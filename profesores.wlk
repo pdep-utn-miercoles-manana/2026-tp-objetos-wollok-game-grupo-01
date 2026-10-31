@@ -10,7 +10,7 @@ class Profesor {
   var property position
   var posicionInicial = null         // la copio en initialize para poder reiniciar el piso
   const property nombre
-  const property imagen = "./assets/profesor.png"
+  const property imagen = "Dr Omar.png"
   const reaccion
   const comportamientos = []
   var congelado = false
