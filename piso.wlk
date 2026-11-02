@@ -20,7 +20,7 @@ class Piso{
     const escaleras = []
     const cafes = []
     const panfletos = []
-
+    const bancosMoviles = []
         method estaDentroDelMapa(posicion){
                 return self.requeridoDeAncho(posicion) &&  self.requeridoDeLargo(posicion)
         }

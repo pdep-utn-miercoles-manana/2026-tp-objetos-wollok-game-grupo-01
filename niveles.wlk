@@ -17,7 +17,7 @@ object niveles {
     const escaleraPrimerPiso = new Escalera(position = game.at(19, 10)) 
     // Escritorio que contiene la llave
    const escritorioPrimerPiso = new Escritorio(
-        position = game.at(5, 7)
+        position = game.at(18, 5)
     )
 
    //Declaración de los escritorios adicionales

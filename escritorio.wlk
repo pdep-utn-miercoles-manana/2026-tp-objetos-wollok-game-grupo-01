@@ -5,7 +5,15 @@ class Escritorio inherits Obstaculos {
     var estaAbierto = false
     var llave = null
 
-    method image() = "escritorios.png"
+    method image() {
+    if (llave == null) {
+        return "escritorios.png"
+    } else if (estaAbierto) {
+        return "escritorioAbiertocontapa.png"
+    } else {
+        return "escritorioConTapaCerrada.png"
+    }
+}
 
     method asignarLlave(unaLlave) {
         llave = unaLlave
