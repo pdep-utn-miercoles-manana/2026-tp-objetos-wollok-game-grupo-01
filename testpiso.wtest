@@ -4,6 +4,11 @@
 import wollok.game.*
 import piso.*
 import proyectiles.*
+import escritorio.*
+import llave.*
+import parcial.*
+import escaleras.*
+import bancoMovil.*
 
 describe "Tests de Piso" {
 
@@ -140,7 +145,154 @@ test "El piso no esta completo si falta agarrar un parcial" {
 
     assert.notThat(piso.tieneTodosLosParcialesAgarrados())
 }
+test "El alumno puede interactuar con un escritorio adyacente" {
+    const piso = new Piso(ancho = 10, largo = 8)
 
+    const escritorio = object {
+        var property position = game.at(5, 5)
+        var property interacciones = 0
 
+        method interactuar(alumno) {
+        interacciones += 1
+        }
+
+        method estaCerrado() = true
+    }
+
+    const alumno = object {
+        var property position = game.at(5, 4)
+    }
+
+    piso.agregarEscritorio(escritorio)
+    piso.interactuarEscritoriosCercanos(alumno)
+
+    assert.equals(1, escritorio.interacciones())
+}
+test "Al abrir un escritorio se obtiene el parcial guardado" {
+    const piso = new Piso(ancho = 10, largo = 8)
+
+    const llave = new Llave(position = game.at(2, 2))
+    const escritorio = new Escritorio(
+        position = game.at(5, 5),
+        llave = llave
+    )
+    const parcial = new Parcial(position = game.at(5, 5))
+
+    const alumno = object {
+        var property position = game.at(5, 4)
+    }
+
+    piso.agregarEscritorio(escritorio)
+    piso.agregarParcial(parcial)
+    piso.vincularParcialConEscritorio(parcial, escritorio)
+
+    llave.agarrar()
+    piso.interactuarEscritoriosCercanos(alumno)
+
+    assert.notThat(escritorio.estaCerrado())
+    assert.that(parcial.seAgarro())
+}
+
+test "Un escritorio cerrado no entrega su parcial" {
+    const piso = new Piso(ancho = 10, largo = 8)
+
+    const llave = new Llave(position = game.at(2, 2))
+    const escritorio = new Escritorio(
+        position = game.at(5, 5),
+        llave = llave
+    )
+    const parcial = new Parcial(position = game.at(5, 5))
+
+    const alumno = object {
+        var property position = game.at(5, 4)
+    }
+
+    piso.agregarEscritorio(escritorio)
+    piso.agregarParcial(parcial)
+    piso.vincularParcialConEscritorio(parcial, escritorio)
+
+    piso.interactuarEscritoriosCercanos(alumno)
+
+    assert.that(escritorio.estaCerrado())
+    assert.notThat(parcial.seAgarro())
+}
+test "La escalera solicita avanzar cuando el alumno esta sobre ella" {
+    const piso = new Piso(ancho = 10, largo = 8)
+    const escalera = new Escalera(position = game.at(3, 3))
+
+    const alumno = object {
+        var property position = game.at(3, 3)
+    }
+
+    const juegoDePrueba = object {
+        var property avances = 0
+
+        method avanzarEntrePiso() {
+            avances += 1
+        }
+    }
+
+    piso.agregarEscalera(escalera)
+    piso.interactuarEscaleraEn(
+        alumno.position(), alumno, juegoDePrueba
+    )
+
+    assert.equals(1, juegoDePrueba.avances())
+}
+test "Al reiniciar un piso se restauran la llave el escritorio y el parcial" {
+    const piso = new Piso(ancho = 20, largo = 12)
+
+    const llave = new Llave(position = game.at(4, 4))
+    const escritorio = new Escritorio(
+        position = game.at(6, 6),
+        llave = llave
+    )
+    const parcial = new Parcial(position = game.at(6, 6))
+
+    const alumno = object {
+        var property position = game.at(6, 5)
+    }
+
+    llave.initialize()
+    escritorio.initialize()
+
+    piso.agregarLlave(llave)
+    piso.agregarEscritorio(escritorio)
+    piso.agregarParcial(parcial)
+    piso.vincularParcialConEscritorio(parcial, escritorio)
+
+    // El jugador consigue el parcial
+    llave.agarrar()
+    piso.interactuarEscritoriosCercanos(alumno)
+
+    assert.that(parcial.seAgarro())
+
+    // Reiniciamos el piso
+    piso.reiniciarPiso()
+
+    // Comprobamos que todo volvió al estado inicial
+    assert.notThat(llave.fueRecogida())
+    assert.that(escritorio.estaCerrado())
+    assert.notThat(parcial.seAgarro())
+    assert.equals(game.at(4, 4), llave.position())
+    assert.equals(game.at(6, 6), escritorio.position())
+}
+test "Al reiniciar el piso los bancos vuelven a su posicion inicial" {
+    const piso = new Piso(ancho = 20, largo = 12)
+
+    const banco = new BancosMoviles(position = game.at(8, 3))
+    banco.initialize()
+
+    piso.agregarObstaculo(banco)
+
+    banco.moverA(game.at(9, 3))
+
+    assert.equals(game.at(9, 3), banco.position())
+
+    piso.reiniciarPiso()
+
+    assert.equals(game.at(8, 3), banco.position())
+    assert.notThat(piso.esTransitable(game.at(8, 3)))
+}
 
 }

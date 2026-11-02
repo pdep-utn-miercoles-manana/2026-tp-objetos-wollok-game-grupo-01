@@ -9,7 +9,13 @@ object juego{
 
         method iniciar() {
             niveles.configurarPrimerPiso()
+            niveles.configurarSegundoPiso()
+
             self.agregarPiso(niveles.primerPiso())
+            self.agregarPiso(niveles.segundoPiso())
+
+            niveles.segundoPiso().ocultarVisuales()
+
             jugador.establecerPiso(self.pisoActual())
             game.addVisual(jugador)
             keyboard.up().onPressDo({ jugador.moverArriba() })
@@ -22,9 +28,10 @@ object juego{
             //Interaccion al presionar la tecla e, con escaleras, llaves y parciales.
             keyboard.e().onPressDo({
             self.pisoActual().interactuarCon(jugador)
+            self.pisoActual().interactuarEscritoriosCercanos(jugador)
             self.pisoActual().interactuarEscaleraEn(
-            jugador.position(),jugador,self )})
-
+            jugador.position(), jugador, self)
+            })
         }
         method agregarPiso(unPiso) = pisos.add(unPiso)
         method cantidadDePisos() = pisos.size()
@@ -32,10 +39,11 @@ object juego{
             return pisos.get(numeroDePisoActual)
         }
        method iniciarActualizaciones() {
-        const tick = game.tick(tiempos.milisegundosPorTick(), {
-        self.pisoActual().actualizar(jugador)
-        jugador.actuar()
-        }, false)
+          const tick = game.tick(tiempos.milisegundosPorTick(), {
+            self.pisoActual().actualizar(jugador)
+            jugador.actuar()
+            self.verificarDerrota()
+            }, false)
 
         tick.start()
         }
@@ -48,9 +56,10 @@ object juego{
 
         //     tick.start()
         // }
-        method reiniciarPisoActual() {
+       method reiniciarPisoActual() {
             self.pisoActual().reiniciarPiso()
             jugador.reiniciar()
+            jugador.position(self.pisoActual().posicionDeEntrada())
         }
         // mensaje creado para reiniciar estado de piso entre test
         method reiniciarConfiguracion() {
@@ -58,10 +67,14 @@ object juego{
                 numeroDePisoActual = 0
         }
 
-         method avanzarEntrePiso() {
-                if (self.condicionOkDePasarEntrePisos()) {
-                numeroDePisoActual += 1
-                }
+       method avanzarEntrePiso() {
+            if (self.condicionOkDePasarEntrePisos()) {
+            self.pisoActual().ocultarVisuales()
+            numeroDePisoActual += 1
+            jugador.establecerPiso(self.pisoActual())
+            jugador.position(self.pisoActual().posicionDeEntrada())
+            self.pisoActual().mostrarVisuales()
+            }
         }
         method condicionOkDePasarEntrePisos(){
             return self.haySiguientePiso() && self.pisoActual().tieneTodosLosParcialesAgarrados()
