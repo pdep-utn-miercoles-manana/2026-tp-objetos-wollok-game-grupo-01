@@ -6,7 +6,7 @@ class Llave inherits Obstaculos {
     var recogida = false
     var utilizada = false
 
-    method image() = "llaves.png"
+    method image() = "llave.png"
 
     method fueRecogida() = recogida
 

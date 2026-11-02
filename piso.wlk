@@ -21,6 +21,16 @@ class Piso{
     const cafes = []
     const panfletos = []
     const bancosMoviles = []
+
+  
+   method agregarBancoMovil(unBanco) {
+   bancosMoviles.add(unBanco)
+    self.agregarObstaculo(unBanco)
+  }
+
+  method actuarBancosMoviles() {
+  bancosMoviles.forEach({ banco => banco.actuar() })
+  }
         method estaDentroDelMapa(posicion){
                 return self.requeridoDeAncho(posicion) &&  self.requeridoDeLargo(posicion)
         }
@@ -63,6 +73,8 @@ class Piso{
         method actualizar(unAlumno) {
             self.actuarProfesores(unAlumno)
             self.avanzarProyectiles(unAlumno)
+            self.actuarBancosMoviles()
+
         }
 
 

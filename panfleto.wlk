@@ -2,6 +2,7 @@ import obstaculos.*
 class Panfleto inherits Obstaculos {
     var usado = false
 
+    method image() = "panfleto.png"
     method usar(alumno) {
         if (!usado) {
             usado = true

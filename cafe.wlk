@@ -2,6 +2,7 @@ import obstaculos.*
 class Cafe inherits Obstaculos {
     var usado = false
 
+    method image() = "cafe.png"
     method usar(alumno) {
         if (!usado) {
             alumno.recuperarCorazon()
