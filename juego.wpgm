@@ -12,6 +12,7 @@ program programaPrincipal {
     // Le pedimos al objeto controlador que inicie el juego
     juego.iniciar()
 
+       game.boardGround("fondoPiso.png")
     // Arranca el motor
     game.start()
 }
