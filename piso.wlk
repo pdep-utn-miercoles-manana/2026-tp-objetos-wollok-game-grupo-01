@@ -89,9 +89,8 @@ class Piso{
         // Sobre escaleras
         method agregarEscalera(unaEscalera) {
         escaleras.add(unaEscalera)
-        obstaculos.add(unaEscalera)
         game.addVisual(unaEscalera)
-        } 
+        }
 
        method interactuarEscaleraEn(unaPosicion, alumno, unJuego) {
        escaleras.filter({ escalera => escalera.position() == unaPosicion })
@@ -106,7 +105,6 @@ class Piso{
        }
 
        method agregarEscritorio(unEscritorio) {
-       obstaculos.add(unEscritorio)
        escritorios.add(unEscritorio)
        game.addVisual(unEscritorio)
       }
