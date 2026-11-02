@@ -9,10 +9,12 @@ class Piso{
 
     const ancho 
     const largo 
+    var property posicionDeEntrada = game.at(7, 4)
     const obstaculos = []
     const profesores = [] // no se puede poner como #{} ya que los gallitos son profesores y ellos son todos iguales
     const proyectiles = new Proyectiles()
     const parciales = []
+    const parcialesConEscritorio = []
     const llaves = [] 
     const escritorios = []
     const escaleras = []
@@ -105,9 +107,10 @@ class Piso{
        }
 
        method agregarEscritorio(unEscritorio) {
-       escritorios.add(unEscritorio)
-       game.addVisual(unEscritorio)
-      }
+        escritorios.add(unEscritorio)
+        obstaculos.add(unEscritorio)
+        game.addVisual(unEscritorio)
+        }
 
      method recogerLlaveEn(unaPosicion) {
      llaves
@@ -122,13 +125,67 @@ class Piso{
         .forEach({ escritorio => escritorio.interactuar(alumno) })
      }
 
+    method ocultarVisuales() {
+        [profesores, obstaculos, escritorios, llaves,
+        escaleras, cafes, panfletos, parciales]
+                .forEach({ coleccion =>
+                 coleccion.forEach({ elemento =>
+                    if (game.hasVisual(elemento)) {
+                    game.removeVisual(elemento)
+                    }
+                })
+            })
+        
+    }
+    method mostrarVisuales() {
+        [profesores, obstaculos, escritorios,
+        escaleras, cafes, panfletos]
+            .forEach({ coleccion =>
+                coleccion.forEach({ elemento =>
+                if (not game.hasVisual(elemento)) {
+                    game.addVisual(elemento)
+                }
+            })
+        })
+
+        llaves
+            .filter({ llave => not llave.fueRecogida() })
+            .forEach({ llave =>
+             if (not game.hasVisual(llave)) {
+                game.addVisual(llave)
+            }
+        })
+    }   
+    method interactuarEscritoriosCercanos(alumno) {
+        escritorios
+            .filter({ escritorio =>
+                (escritorio.position().x() - alumno.position().x()).abs() +
+                (escritorio.position().y() - alumno.position().y()).abs() == 1
+            })
+            .forEach({ escritorio =>
+                escritorio.interactuar(alumno)
+
+               if (not escritorio.estaCerrado()) {
+                parcialesConEscritorio
+                    .filter({ relacion =>
+                        relacion.get(1) == escritorio &&
+                        not relacion.first().seAgarro()
+                        })
+                    .forEach({ relacion =>
+                        relacion.first().agarrar()
+                        if (game.running()) {
+                            game.say(escritorio, "¡Parcial conseguido!")
+                             }
+                        })
+                }
+             })
+    }
+
     method interactuarCon(alumno) {
     self.recogerLlaveEn(alumno.position())
-    self.recogerParcialEn(alumno.position())
     self.recogerCafeEn(alumno.position(), alumno)
     self.recogerPanfletoEn(alumno.position(), alumno)
     self.interactuarEscritorioEn(alumno.position(), alumno)
-
     }
 
 
@@ -175,13 +232,19 @@ class Piso{
        
        //Reinicia los parciales
        method reiniciarParciales() {
-       parciales.forEach({ parcial => parcial.reiniciar() })
-       }
+         parciales.forEach({ parcial =>
+        parcial.reiniciar()
+        game.removeVisual(parcial)
+        })
+        }
 
         // <----- Condicion para pasar de nivel -----> 
 
         method agregarParcial(unParcial) = parciales.add(unParcial)
-        
+
+        method vincularParcialConEscritorio(unParcial, unEscritorio) {
+            parcialesConEscritorio.add([unParcial, unEscritorio])
+        }
         method tieneParcial(unParcial) {
             return parciales.contains(unParcial)
         }

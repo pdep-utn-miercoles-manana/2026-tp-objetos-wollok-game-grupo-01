@@ -1,7 +1,7 @@
 import november.*
 import piso.*
 import jugador.*
-
+import wollok.game.*
 describe "Tests de Juego" {
 
     test "Se puede agregar un piso al juego" {
@@ -127,5 +127,28 @@ test "El juego reinicia cuando el jugador se queda sin vidas" {
     juego.verificarDerrota()
 
     assert.equals(3, jugador.vidas())
+}
+test "El jugador aparece en la entrada del siguiente piso" {
+    juego.reiniciarConfiguracion()
+
+    const primerPiso = new Piso(ancho = 20, largo = 12)
+    const segundoPiso = new Piso(ancho = 20,largo = 12,posicionDeEntrada = game.at(2, 2))
+
+    const parcial = object {
+        method seAgarro() = true
+    }
+
+    primerPiso.agregarParcial(parcial)
+
+    juego.agregarPiso(primerPiso)
+    juego.agregarPiso(segundoPiso)
+
+    jugador.position(game.at(7, 4))
+    jugador.establecerPiso(primerPiso)
+
+    juego.avanzarEntrePiso()
+
+    assert.equals(segundoPiso, juego.pisoActual())
+    assert.equals(game.at(2, 2), jugador.position())
 }
 }
