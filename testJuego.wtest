@@ -1,5 +1,6 @@
 import november.*
 import piso.*
+import jugador.*
 
 describe "Tests de Juego" {
 
@@ -91,12 +92,40 @@ test "No avanza de piso si faltan parciales" {
 
     assert.equals(primerPiso, juego.pisoActual())
 }
-/*test "El juego reinicia el piso actual" {
+test "El juego reinicia el piso actual" {
     juego.reiniciarConfiguracion()
 
     const piso = new Piso(ancho = 15, largo = 10)
     juego.agregarPiso(piso)
 
     juego.reiniciarPisoActual()
-} */
+    assert.that(true)
+} 
+
+test "Al reiniciar el piso se recuperan las vidas del jugador" {
+    juego.reiniciarConfiguracion()
+
+    const piso = new Piso(ancho = 15, largo = 10)
+    juego.agregarPiso(piso)
+
+    jugador.recibirGolpe(3)
+    assert.equals(0, jugador.vidas())
+
+    juego.reiniciarPisoActual()
+
+    assert.equals(3, jugador.vidas())
+}
+test "El juego reinicia cuando el jugador se queda sin vidas" {
+    juego.reiniciarConfiguracion()
+
+    const piso = new Piso(ancho = 15, largo = 10)
+    juego.agregarPiso(piso)
+
+    jugador.reiniciar()
+    jugador.recibirGolpe(3)
+
+    juego.verificarDerrota()
+
+    assert.equals(3, jugador.vidas())
+}
 }

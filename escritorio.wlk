@@ -5,7 +5,7 @@ class Escritorio inherits Obstaculos {
     var estaAbierto = false
     var llave
 
-    method image() = "./assets/escritorio.png"
+    method image() = "sillas.png"
     method asignarLlave(unaLlave) {
         llave = unaLlave
     }

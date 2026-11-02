@@ -15,6 +15,7 @@ object niveles {
 
     method configurarPrimerPiso() {
         const piso = self.primerPiso()
+          piso.precargarProyectiles(20)
           piso.agregarProfesor(profesores.omar(game.at(3, 3)))
           piso.agregarProfesor(profesores.lettuce(game.at(11, 3)))
           piso.agregarLlave(llavePrimerPiso)

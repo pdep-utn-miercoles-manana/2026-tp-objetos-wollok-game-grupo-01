@@ -1,10 +1,9 @@
 class Obstaculos {
     var property position
-    var posicionInicial = game.at(0, 0)
+    var posicionInicial = null
 
-    method initialize(unaPosicion) {
-        position = unaPosicion
-        posicionInicial = unaPosicion
+    method initialize() {
+        posicionInicial = position
     }
 
     method reiniciar() {

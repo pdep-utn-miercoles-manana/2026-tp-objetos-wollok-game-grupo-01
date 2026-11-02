@@ -35,7 +35,13 @@ describe "Persecución de profesores" {
 
     profesor.actuar(alumno, piso)
 
-    assert.equals(game.at(0, 1), profesor.position())
+    (1..10).forEach({ i =>
+    if (profesor.position() == game.at(0, 0)) {
+        profesor.actuar(alumno, piso)
+    }
+})
+
+assert.equals(game.at(0, 1), profesor.position())
   }
 
   test "si no hay camino se queda quieto" {

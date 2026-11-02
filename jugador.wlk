@@ -25,6 +25,20 @@ object jugador {
     var movilidad = movilidadNormal
     var pasoAlterno = false
     var pendrive = null
+    var pisoActual = null
+
+    method establecerPiso(unPiso) {
+        pisoActual = unPiso
+    }
+
+    // Si todavía no hay piso (por ejemplo en un test), uso los bordes del juego.
+    method esTransitable(destino) {
+        if (pisoActual == null) {
+            return destino.x() >= 0 and destino.x() < game.width() and
+                   destino.y() >= 0 and destino.y() < game.height()
+        }
+        return pisoActual.esTransitable(destino)
+    }
 
     var vidas = vidasIniciales
     var ticksCongelado = 0
@@ -49,7 +63,7 @@ object jugador {
     }
 
 
-    method image() = if (pasoAlterno) "./assets/jugadorDerecha2.png" else "./assets/jugadorDerecha1.png"
+    method image() = if (pasoAlterno) "jugadorDerecha2.png" else "jugadorDerecha1.png"
 
     // Si está congelado, ignora las teclas
     method moverArriba()    { if (self.puedeMoverse()) movilidad.arriba(self) }
@@ -59,34 +73,38 @@ object jugador {
 
     method puedeMoverse() = !self.estaCongelado()
 
-    // Movimientos reales (con tus chequeos de borde)
+    // Movimientos reales (con bordes y obstáculos)
     method irArriba() {
-        if (position.y() < game.height() - 1) {
-            position = position.up(velocidad)
+        const destino = position.up(velocidad)
+        if (self.esTransitable(destino)) {
+            position = destino
             self.alternarSprite()
             self.verificarInteraccion()
         }
     }
 
     method irAbajo() {
-        if (position.y() > 0) {
-            position = position.down(velocidad)
+        const destino = position.down(velocidad)
+        if (self.esTransitable(destino)) {
+            position = destino
             self.alternarSprite()
             self.verificarInteraccion()
         }
     }
 
     method irIzquierda() {
-        if (position.x() > 0) {
-            position = position.left(velocidad)
+        const destino = position.left(velocidad)
+        if (self.esTransitable(destino)) {
+            position = destino
             self.alternarSprite()
             self.verificarInteraccion()
         }
     }
 
     method irDerecha() {
-        if (position.x() < game.width() - 1) {
-            position = position.right(velocidad)
+        const destino = position.right(velocidad)
+        if (self.esTransitable(destino)) {
+            position = destino
             self.alternarSprite()
             self.verificarInteraccion()
         }

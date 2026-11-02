@@ -108,21 +108,105 @@ object quieto {
   method reiniciar() {}
 }
 
-// Perseguir le pide el primer paso al BFS y se mueve.
-// `pasos` lo agregué para que el machete acelere a los gallitos.
 class Perseguir {
   var property pasos = 1
+  var busqueda = null
+  var buscando = false
+  var destinoBuscado = null
 
   method actuar(profesor, alumno, piso) {
-    (1..pasos).forEach({ i =>
-      profesor.position(buscadorDeCaminos.primerPasoHacia(profesor.position(), profesor.objetivo(alumno), piso))
-    })
+    (1..pasos).forEach({ i => self.intentarAvanzar(profesor, alumno, piso) })
   }
 
-  method acelerar() { pasos += 1 }
+  method intentarAvanzar(profesor, alumno, piso) {
+    const origen = profesor.position()
+    const destino = profesor.objetivo(alumno)
 
-  method reiniciar() { pasos = 1 }
+    if (origen == destino) {
+      buscando = false
+    } else {
+      if (buscadorDeCaminos.caminoDirectoLibre(origen, destino, piso)) {
+        buscando = false
+        profesor.position(self.siguienteDirecto(origen, destino))
+      } else {
+        // Si el alumno se movió, la ruta vieja ya no sirve: arranco de nuevo.
+        if (not buscando or destinoBuscado != destino) {
+          busqueda = new BusquedaIncremental(
+            origen = origen,
+            destino = destino,
+            piso = piso)
+          destinoBuscado = destino
+          buscando = true
+        }
+
+        if (not busqueda.estaFinalizada()) {
+          busqueda.avanzar()
+        }
+
+        if (busqueda.estaFinalizada()) {
+          if (busqueda.tienePasosPendientes()) {
+            const siguiente = busqueda.consumirSiguientePaso()
+            if (piso.esTransitable(siguiente) or siguiente == destino) {
+              profesor.position(siguiente)
+            } else {
+              buscando = false
+            }
+          } else {
+            buscando = false
+          }
+        }
+      }
+    }
+  }
+
+  method siguienteDirecto(origen, destino) {
+    if (origen.x() != destino.x()) {
+      return if (origen.x() < destino.x())
+        origen.right(1)
+      else
+        origen.left(1)
+    }
+
+    return if (origen.y() < destino.y())
+      origen.up(1)
+    else
+      origen.down(1)
+  }
+
+  method acelerar() {
+    pasos += 1
+  }
+
+  method reiniciar() {
+    pasos = 1
+    buscando = false
+  }
 }
+
+
+
+
+
+
+
+
+
+
+// Perseguir le pide el primer paso al BFS y se mueve.
+// `pasos` lo agregué para que el machete acelere a los gallitos.
+// class Perseguir {
+//   var property pasos = 1
+
+//   method actuar(profesor, alumno, piso) {
+//     (1..pasos).forEach({ i =>
+//       profesor.position(buscadorDeCaminos.primerPasoHacia(profesor.position(), profesor.objetivo(alumno), piso))
+//     })
+//   }
+
+//   method acelerar() { pasos += 1 }
+
+//   method reiniciar() { pasos = 1 }
+// }
 
 // Decorador: envuelve otro comportamiento y lo deja actuar cada n ticks.
 // Así "velocidad baja" y "tira cada tanto" son números, no clases nuevas.
@@ -221,40 +305,40 @@ object profesores {
   }
 
   method omar(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Dr. Omar", reaccion = reaccionOmar, imagen = "./assets/Dr Omar.png")
+    const profesor = new Profesor(position = posicion, nombre = "Dr. Omar", reaccion = reaccionOmar, imagen = "Dr Omar.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new Perseguir()))
     profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = tiza)))
     return self.agregarAlJuego(profesor)
   }
 
   method lettuce(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Ing. Lettuce", reaccion = reaccionLettuce, imagen = "./assets/letucce.png")
+    const profesor = new Profesor(position = posicion, nombre = "Ing. Lettuce", reaccion = reaccionLettuce, imagen = "letucce.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new Perseguir()))
     profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = borrador)))
     return self.agregarAlJuego(profesor)
   }
 
   method gallo(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Gallo", reaccion = reaccionGallo, imagen = "./assets/galo.png")
+    const profesor = new Profesor(position = posicion, nombre = "Gallo", reaccion = reaccionGallo, imagen = "galo.png")
     profesor.agregarComportamiento(quieto)
     profesor.agregarComportamiento(new CadaNTicks(n = 8, comportamiento = new LanzarProyectil(tipo = huevo)))
     return self.agregarAlJuego(profesor)
   }
 
   method gallito(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito, imagen = "./assets/galo.png")
+    const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito, imagen = "galo.png")
     profesor.agregarComportamiento(new Perseguir())
     return self.agregarAlJuego(profesor)
   }
 
   method filipo(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Filipo", reaccion = reaccionFilipo, imagen = "./assets/filipo.png")
+    const profesor = new Profesor(position = posicion, nombre = "Filipo", reaccion = reaccionFilipo, imagen = "filipo.png")
     profesor.agregarComportamiento(quieto)
     return self.agregarAlJuego(profesor)
   }
 
   method fermin(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Fermin", reaccion = reaccionFilipo, imagen = "./assets/fermin.png")
+    const profesor = new Profesor(position = posicion, nombre = "Fermin", reaccion = reaccionFilipo, imagen = "filipo.png")
     profesor.agregarComportamiento(quieto)
     return self.agregarAlJuego(profesor)
   }

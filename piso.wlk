@@ -55,6 +55,7 @@ class Piso{
         method agregarProyectil(unProyectil) = proyectiles.agregar(unProyectil)
         method cantidadDeProyectiles() = proyectiles.cantidad()
         method avanzarProyectiles(unAlumno) = proyectiles.avanzar(unAlumno)
+        method precargarProyectiles(cantidad) = proyectiles.precargar(cantidad)
 
 
         method actualizar(unAlumno) {
@@ -94,7 +95,7 @@ class Piso{
 
        method interactuarEscaleraEn(unaPosicion, alumno, unJuego) {
        escaleras.filter({ escalera => escalera.position() == unaPosicion })
-       .forEach({ escalera => escalera.interactuar(alumno, self, unJuego) })
+       .forEach({ escalera => escalera.interactuar(alumno, unJuego) })
        }
 
         //Sobre escritorio y llaves

@@ -4,6 +4,5 @@
     "wollokVersion": "4.2.3",
     "author": "nacho",
     "license": "ISC",
-    "resourseFolder": "./assets" 
+    "resourceFolder": "assets"
   }
-  

@@ -4,7 +4,7 @@ class Parcial {
     var property position
     var agarrado = false
 
-    method image() = "./assets/parcial.png"
+    method image() = "parcial.png"
 
     // Indica si el parcial ya fue recogido.
     method seAgarro() = agarrado
