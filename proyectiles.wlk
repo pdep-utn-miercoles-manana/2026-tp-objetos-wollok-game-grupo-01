@@ -39,8 +39,8 @@ object trayectorias {
 // El proyectil solo avanza y dice a quién toca. El efecto lo pone el tipo.
 class Proyectil {
   var property position
-  const direccion
-  const tipo
+  var property direccion
+  var property tipo
 
   method avanzar() {
     position = direccion.siguiente(position)
@@ -51,6 +51,17 @@ class Proyectil {
   method impactar(alumno) { tipo.impactar(alumno) }
 
   method image() = "./assets/proyectil.png"
+
+  // Para reutilizar el mismo objeto visual sin volver a agregarlo al juego.
+  method copiarDe(otro) {
+    position = otro.position()
+    direccion = otro.direccion()
+    tipo = otro.tipo()
+  }
+
+  method desactivar() {
+    position = game.at(0, -1)
+  }
 }
 
 // Tiza: saca 1.
@@ -71,17 +82,39 @@ object huevo {
   method impactar(alumno) { alumno.recibirGolpe(1) }
 }
 
-// La lista de los proyectiles vivos. Avanza, impacta y saca los que ya pegaron.
-// Lucca puede usar esto desde el Piso para no repetir el recorrido en cada tick.
+// La lista de los proyectiles vivos. Avanza, impacta y recicla los que ya pegaron.
+// Ojo: los visuales se crean una sola vez y después se reutilizan. Si se hace
+// game.addVisual/removeVisual por cada tiro, el juego se tira tirones.
 class Proyectiles {
   const property vivos = []
+  const reciclables = []
 
-  method agregar(proyectil) {
-    vivos.add(proyectil)
-    game.addVisual(proyectil)
+  method agregar(proyectilNuevo) {
+    if (reciclables.isEmpty()) {
+      vivos.add(proyectilNuevo)
+      game.addVisual(proyectilNuevo)
+    } else {
+      const reciclado = reciclables.first()
+      reciclables.remove(reciclado)
+      reciclado.copiarDe(proyectilNuevo)
+      vivos.add(reciclado)
+    }
   }
 
   method cantidad() = vivos.size()
+
+  // Deja unos proyectiles ya dibujados afuera del tablero para que el primer
+  // disparo no tenga que crear el visual en medio del juego.
+  method precargar(cantidad) {
+    (1..cantidad).forEach({ i =>
+      const proyectil = new Proyectil(
+        position = game.at(0, -1),
+        direccion = este,
+        tipo = tiza)
+      reciclables.add(proyectil)
+      game.addVisual(proyectil)
+    })
+  }
 
   method avanzar(alumno) {
     vivos.forEach({ p => p.avanzar() })
@@ -92,21 +125,23 @@ class Proyectiles {
   }
 
   // Cuando el proyectil sale del piso o se choca con una pared, no tiene sentido dejarlo vivo.
-  // Lucca la puede llamar desde Piso.avanzarProyectiles.
   method descartarFueraDe(piso) {
     vivos
       .filter({ p => not piso.esTransitable(p.position()) })
       .forEach({ p => self.sacar(p) })
   }
 
-  // Al reiniciar el piso se van todos los proyectiles y también sus visuales.
+  // Al reiniciar el piso se apagan los proyectiles, pero los visuales se conservan
+  // para reciclarlos en el próximo tiro.
   method reiniciar() {
-    vivos.forEach({ p => game.removeVisual(p) })
+    vivos.forEach({ p => p.desactivar() })
+    reciclables.addAll(vivos)
     vivos.clear()
   }
 
   method sacar(proyectil) {
     vivos.remove(proyectil)
-    game.removeVisual(proyectil)
+    proyectil.desactivar()
+    reciclables.add(proyectil)
   }
 }

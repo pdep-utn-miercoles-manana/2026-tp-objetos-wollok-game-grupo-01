@@ -45,6 +45,7 @@ class Piso{
         // <---- Sobre Proyectiles ---->
         method agregarProyectil(unProyectil) = proyectiles.agregar(unProyectil)
         method cantidadDeProyectiles() = proyectiles.cantidad()
+        method precargarProyectiles(cantidad) = proyectiles.precargar(cantidad)
         method avanzarProyectiles(unAlumno) {
             proyectiles.avanzar(unAlumno)
             proyectiles.descartarFueraDe(self)

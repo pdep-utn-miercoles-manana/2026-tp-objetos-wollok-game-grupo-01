@@ -1,4 +1,4 @@
-import piso.*
+﻿import piso.*
 import wollok.game.*
 import profesores.*
 import llave.*
@@ -10,6 +10,7 @@ object niveles {
     
     method configurarPrimerPiso() {
         const piso = self.primerPiso()
+        piso.precargarProyectiles(20)
           piso.agregarProfesor(profesores.omar(game.at(3, 3)))
           //piso.agregarProfesor(profesores.lettuce(game.at(11, 3)))
         const banco = new BancosFijos(position = game.at(9, 5))
@@ -29,3 +30,5 @@ object niveles {
 
     method primerPiso() = pisoLettuceYOmar
 }
+
+

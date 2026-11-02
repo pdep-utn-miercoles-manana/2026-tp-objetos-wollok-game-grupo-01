@@ -109,79 +109,78 @@ object quieto {
 }
 
 class Perseguir {
-    var property pasos = 1
-    var busqueda = null
-    var buscando = false
+  var property pasos = 1
+  var busqueda = null
+  var buscando = false
+  var destinoBuscado = null
 
   method actuar(profesor, alumno, piso) {
-    (1..pasos).forEach({ i =>
-        self.intentarAvanzar(profesor, alumno, piso)
-    })
+    (1..pasos).forEach({ i => self.intentarAvanzar(profesor, alumno, piso) })
   }
 
-    method intentarAvanzar(profesor, alumno, piso) {
-        const origen = profesor.position()
-        const destino = profesor.objetivo(alumno)
+  method intentarAvanzar(profesor, alumno, piso) {
+    const origen = profesor.position()
+    const destino = profesor.objetivo(alumno)
 
-        if (origen == destino) {
-            buscando = false
-        } else {
-            if (buscadorDeCaminos.caminoDirectoLibre(origen, destino, piso)) {
-                buscando = false
-                profesor.position(self.siguienteDirecto(origen, destino))
-            } else {
-                if (not buscando) {
-                    busqueda = new BusquedaIncremental(
-                        origen = origen,
-                        destino = destino,
-                        piso = piso
-                    )
-                    buscando = true
-                }
-
-                if (not busqueda.estaFinalizada()) {
-                  busqueda.avanzar()
-                    }
-
-                  if (busqueda.estaFinalizada()) {
-                     if (busqueda.tienePasosPendientes()) {
-                  const siguiente = busqueda.consumirSiguientePaso()
-
-                  if (piso.esTransitable(siguiente) or siguiente == destino) {
-                  profesor.position(siguiente)
-                 } else {
-                      buscando = false
-                    }
-                    } else {
-                     buscando = false
-                    }
-                }
-            }
-        }
-    }
-
-    method siguienteDirecto(origen, destino) {
-        if (origen.x() != destino.x()) {
-            return if (origen.x() < destino.x())
-                origen.right(1)
-            else
-                origen.left(1)
-        }
-
-        return if (origen.y() < destino.y())
-            origen.up(1)
-        else
-            origen.down(1)
-    }
-
-    method acelerar() {
-        pasos += 1
-    }
-
-    method reiniciar() {
-        pasos = 1
+    if (origen == destino) {
+      buscando = false
+    } else {
+      if (buscadorDeCaminos.caminoDirectoLibre(origen, destino, piso)) {
         buscando = false
+        profesor.position(self.siguienteDirecto(origen, destino))
+      } else {
+        // Si el alumno se movió, la ruta vieja ya no sirve: arranco de nuevo.
+        if (not buscando or destinoBuscado != destino) {
+          busqueda = new BusquedaIncremental(
+            origen = origen,
+            destino = destino,
+            piso = piso)
+          destinoBuscado = destino
+          buscando = true
+        }
+
+        if (not busqueda.estaFinalizada()) {
+          busqueda.avanzar()
+        }
+
+        if (busqueda.estaFinalizada()) {
+          if (busqueda.tienePasosPendientes()) {
+            const siguiente = busqueda.consumirSiguientePaso()
+            if (piso.esTransitable(siguiente) or siguiente == destino) {
+              profesor.position(siguiente)
+            } else {
+              buscando = false
+            }
+          } else {
+            buscando = false
+          }
+        }
+      }
     }
+  }
+
+  method siguienteDirecto(origen, destino) {
+    if (origen.x() != destino.x()) {
+      return if (origen.x() < destino.x())
+        origen.right(1)
+      else
+        origen.left(1)
+    }
+
+    return if (origen.y() < destino.y())
+      origen.up(1)
+    else
+      origen.down(1)
+  }
+
+  method acelerar() {
+    pasos += 1
+  }
+
+  method reiniciar() {
+    pasos = 1
+    buscando = false
+  }
 }
 
 
