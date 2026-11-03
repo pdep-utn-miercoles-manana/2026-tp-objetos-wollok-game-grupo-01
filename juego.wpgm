@@ -9,10 +9,9 @@ program programaPrincipal {
     game.height(12)
     game.cellSize(50) 
     
-    // Le pedimos al objeto controlador que inicie el juego
-    juego.iniciar()
+    // Primero mostramos la pantalla de inicio; el juego arranca al presionar Enter/Espacio.
+    juego.mostrarPantallaInicio()
 
-       game.boardGround("fondoPiso.png")
     // Arranca el motor
     game.start()
 }

@@ -2,12 +2,29 @@ import wollok.game.*
 import jugador.*
 import niveles.*
 import profesores.*
+import pantallaInicio.*
 object juego{
 
     const pisos = []
     var numeroDePisoActual = 0
+    var empezado = false
+
+    method mostrarPantallaInicio() {
+        pantallaInicio.mostrar()
+        keyboard.enter().onPressDo({ self.empezar() })
+        keyboard.space().onPressDo({ self.empezar() })
+    }
+
+    method empezar() {
+        if (not empezado) {
+            empezado = true
+            pantallaInicio.ocultar()
+            self.iniciar()
+        }
+    }
 
         method iniciar() {
+            game.boardGround("fondoPiso.png")
             niveles.configurarPrimerPiso()
             niveles.configurarSegundoPiso()
 
