@@ -73,7 +73,7 @@ object jugador {
 
 
     // Ej: jugadorArriba1.png ... jugadorArriba4.png
-    method image() = "jugador" + mirandoA + (frame + 1) + ".png.jpg"
+    method image() = "jugador" + mirandoA + (frame + 1) + "jugadorArriba.png.jpg"
 
     // Si está congelado, ignora las teclas
     method moverArriba()    { if (self.puedeMoverse()) movilidad.arriba(self) }

@@ -25,7 +25,7 @@ class Profesor {
   var property position
   var posicionInicial = null         // la copio en initialize para poder reiniciar el piso
   const property nombre
-  const property imagen = "Dr Omar.png"
+  const property imagen = "DrOmar.png"
   const reaccion
   const comportamientos = []
   var congelado = false
@@ -379,21 +379,21 @@ object profesores {
   }
 
   method omar(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Dr. Omar", reaccion = reaccionOmar, imagen = "Dr Omar.png")
+    const profesor = new Profesor(position = posicion, nombre = "Dr. Omar", reaccion = reaccionOmar, imagen = "DrOmar.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = tiza)))
     return self.agregarAlJuego(profesor)
   }
 
   method lettuce(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Ing. Lettuce", reaccion = reaccionLettuce, imagen = "letucce.png")
+    const profesor = new Profesor(position = posicion, nombre = "Ing. Lettuce", reaccion = reaccionLettuce, imagen = "lettucce.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = borrador)))
     return self.agregarAlJuego(profesor)
   }
 
   method gallo(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Gallo", reaccion = reaccionGallo, imagen = "galo.png")
+    const profesor = new Profesor(position = posicion, nombre = "Gallo", reaccion = reaccionGallo, imagen = "galloDerecha.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 4, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 8, comportamiento = new LanzarProyectil(tipo = huevo)))
     return self.agregarAlJuego(profesor)
@@ -407,14 +407,14 @@ object profesores {
   }
 
   method filipo(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Filipo", reaccion = reaccionFilipo, imagen = "filipo.png")
+    const profesor = new Profesor(position = posicion, nombre = "Filipo", reaccion = reaccionFilipo, imagen = "filipoDerecha1.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 4, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 10, comportamiento = new LanzarProyectil(tipo = tiza)))
     return self.agregarAlJuego(profesor)
   }
 
   method fermin(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Fermin", reaccion = reaccionFilipo, imagen = "filipo.png")
+    const profesor = new Profesor(position = posicion, nombre = "Fermin", reaccion = reaccionFilipo, imagen = "fermin.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 4, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 10, comportamiento = new LanzarProyectil(tipo = tiza)))
     return self.agregarAlJuego(profesor)
