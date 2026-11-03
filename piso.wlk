@@ -201,11 +201,11 @@ class Piso{
     }
 
     method ocultarVisuales() {
-    [profesores, obstaculos, llaves, escaleras, cafes, panfletos, parciales, pendrives]
+    [profesores, obstaculos, llaves, escaleras, cafes, panfletos, parciales, pendrives, proyectiles.visuales()]
         .forEach({ coleccion => coleccion.forEach({ elemento => self.ocultarVisualSiEsta(elemento)})})
     }
     method mostrarVisuales() {
-    [profesores, escaleras, cafes, panfletos]
+    [profesores, escaleras, cafes, panfletos, proyectiles.visuales()]
         .forEach({ coleccion => coleccion.forEach({ elemento => self.mostrarVisualSiFalta(elemento)})})
 
     obstaculos

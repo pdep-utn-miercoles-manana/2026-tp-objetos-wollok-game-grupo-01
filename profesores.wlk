@@ -2,6 +2,21 @@ import buscador.*
 import proyectiles.*
 import wollok.game.*
 
+// Pseudoaleatorio propio para que el juego no dependa de Math.random.
+// Es una LCG chica: alcanza para que los profes cambien de dirección.
+object azar {
+  var semilla = 20261103
+
+  method siguiente() {
+    semilla = (semilla * 37 + 17) % 1000003
+    return semilla
+  }
+
+  method entre(desde, hasta) {
+    return desde + (self.siguiente() % (hasta - desde + 1))
+  }
+}
+
 // Mi parte del TP: los profesores y su "inteligencia".
 // La idea es que el Profesor no sepa qué hace. Le pasa el trabajo a sus
 // comportamientos (moverse, lanzar, quedarse quieto) y a su reacción
@@ -208,6 +223,35 @@ class Perseguir {
   }
 }
 
+// Movimiento deambulante: elige una celda libre al azar. Es barato,
+// no busca caminos y no se traba esperando una ruta.
+class CaminarRandom {
+  var property pasos = 1
+
+  method actuar(profesor, alumno, piso) {
+    (1..pasos).forEach({ i => self.mover(profesor, piso) })
+  }
+
+  method mover(profesor, piso) {
+    const origen = profesor.position()
+    const opciones = [origen.up(1), origen.down(1), origen.left(1), origen.right(1)]
+      .filter({ p => piso.esTransitable(p) and not piso.hayProfesorEn(p, profesor) })
+
+    if (not opciones.isEmpty()) {
+      const elegida = opciones.get(azar.entre(0, opciones.size() - 1))
+      profesor.position(elegida)
+    }
+  }
+
+  method acelerar() {
+    pasos += 1
+  }
+
+  method reiniciar() {
+    pasos = 1
+  }
+}
+
 
 
 
@@ -268,8 +312,13 @@ class LanzarProyectil {
   method actuar(profesor, alumno, piso) {
     piso.agregarProyectil(new Proyectil(
       position = profesor.position(),
-      direccion = trayectorias.hacia(profesor.position(), alumno.position()),
+      direccion = self.direccionAlAzar(),
       tipo = tipo))
+  }
+
+  method direccionAlAzar() {
+    const direcciones = [norte, sur, este, oeste]
+    return direcciones.get(azar.entre(0, 3))
   }
 
   method acelerar() {}
@@ -331,40 +380,43 @@ object profesores {
 
   method omar(posicion) {
     const profesor = new Profesor(position = posicion, nombre = "Dr. Omar", reaccion = reaccionOmar, imagen = "Dr Omar.png")
-    profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new Perseguir()))
+    profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = tiza)))
     return self.agregarAlJuego(profesor)
   }
 
   method lettuce(posicion) {
     const profesor = new Profesor(position = posicion, nombre = "Ing. Lettuce", reaccion = reaccionLettuce, imagen = "letucce.png")
-    profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new Perseguir()))
+    profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = borrador)))
     return self.agregarAlJuego(profesor)
   }
 
   method gallo(posicion) {
     const profesor = new Profesor(position = posicion, nombre = "Gallo", reaccion = reaccionGallo, imagen = "galo.png")
-    profesor.agregarComportamiento(quieto)
+    profesor.agregarComportamiento(new CadaNTicks(n = 4, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 8, comportamiento = new LanzarProyectil(tipo = huevo)))
     return self.agregarAlJuego(profesor)
   }
 
   method gallito(posicion) {
     const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito, imagen = "galo.png")
-    profesor.agregarComportamiento(new Perseguir())
+    profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new CaminarRandom()))
+    profesor.agregarComportamiento(new CadaNTicks(n = 8, comportamiento = new LanzarProyectil(tipo = huevo)))
     return self.agregarAlJuego(profesor)
   }
 
   method filipo(posicion) {
     const profesor = new Profesor(position = posicion, nombre = "Filipo", reaccion = reaccionFilipo, imagen = "filipo.png")
-    profesor.agregarComportamiento(quieto)
+    profesor.agregarComportamiento(new CadaNTicks(n = 4, comportamiento = new CaminarRandom()))
+    profesor.agregarComportamiento(new CadaNTicks(n = 10, comportamiento = new LanzarProyectil(tipo = tiza)))
     return self.agregarAlJuego(profesor)
   }
 
   method fermin(posicion) {
     const profesor = new Profesor(position = posicion, nombre = "Fermin", reaccion = reaccionFilipo, imagen = "filipo.png")
-    profesor.agregarComportamiento(quieto)
+    profesor.agregarComportamiento(new CadaNTicks(n = 4, comportamiento = new CaminarRandom()))
+    profesor.agregarComportamiento(new CadaNTicks(n = 10, comportamiento = new LanzarProyectil(tipo = tiza)))
     return self.agregarAlJuego(profesor)
   }
 }

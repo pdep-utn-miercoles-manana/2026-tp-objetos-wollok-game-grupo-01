@@ -1,18 +1,34 @@
+
 import wollok.game.*
 import november.*
 import jugador.*
-
 
 program programaPrincipal {
     game.title("November is Coming - UTN FRBA")
     game.width(20)
     game.height(12)
-    game.cellSize(50) 
-    
-    // Le pedimos al objeto controlador que inicie el juego
-    juego.iniciar()
+    game.cellSize(50)
 
-       game.boardGround("fondoPiso.png")
-    // Arranca el motor
-    game.start()
+    
+game.boardGround("fondoPiso.png")
+
+const portada = object {
+    method position() = game.at(0, 0)
+    method image() = "pantallaInicioPropia.png"
+}
+
+game.addVisual(portada)
+
+var partidaIniciada = false
+
+game.onClickDo({ posicion =>
+    if (not partidaIniciada) {
+        partidaIniciada = true
+        game.removeVisual(portada)
+        juego.iniciar()
+    }
+})
+
+game.start()
+
 }

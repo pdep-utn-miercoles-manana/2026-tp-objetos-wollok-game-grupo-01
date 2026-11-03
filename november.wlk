@@ -3,13 +3,40 @@ import jugador.*
 import niveles.*
 import profesores.*
 import talonario.*
+import pantallaInicio.*
+import indicadorVidas.*
 object juego{
 
     const pisos = []
     var numeroDePisoActual = 0
     var juegoGanado = false
+    var empezado = false
+
+    method mostrarPantallaInicio() {
+        pantallaInicio.mostrar()
+        keyboard.enter().onPressDo({ self.avanzarInicio() })
+        keyboard.space().onPressDo({ self.avanzarInicio() })
+        game.onClickDo({ posicion => self.avanzarInicio() })
+    }
+
+    method avanzarInicio() {
+        if (pantallaInicio.enMenu()) {
+            self.empezar()
+        } else {
+            pantallaInicio.avanzar()
+        }
+    }
+
+    method empezar() {
+        if (not empezado) {
+            empezado = true
+            pantallaInicio.terminar()
+            self.iniciar()
+        }
+    }
 
         method iniciar() {
+            game.boardGround("fondoPiso.png")
             niveles.configurarPlantaBaja()
             niveles.configurarPrimerPiso()
             niveles.configurarSegundoPiso()
@@ -26,6 +53,7 @@ object juego{
 
             jugador.entrarAlPiso(self.pisoActual())
             game.addVisual(jugador)
+            game.addVisual(indicadorVidas)
             keyboard.up().onPressDo({ jugador.moverArriba() })
             keyboard.down().onPressDo({ jugador.moverAbajo() })
             keyboard.left().onPressDo({ jugador.moverIzquierda() })

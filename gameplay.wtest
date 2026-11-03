@@ -1,0 +1,51 @@
+import wollok.game.*
+import piso.*
+import llave.*
+import escritorio.*
+import parcial.*
+import escaleras.*
+import november.*
+import jugador.*
+import soporteDePruebas.*
+
+describe "Gameplay de objetos" {
+
+  test "el escritorio se abre al interactuar con E y entrega el parcial" {
+    const piso = new Piso(ancho = 10, largo = 10)
+    const llave = new Llave(position = game.at(2, 2))
+    const escritorio = new Escritorio(position = game.at(4, 4), llave = llave)
+    const parcial = new Parcial(position = game.at(6, 6))
+    const alumno = new AlumnoDePrueba(position = game.at(4, 3))
+
+    piso.agregarLlave(llave)
+    piso.agregarEscritorio(escritorio)
+    piso.agregarParcial(parcial)
+    piso.vincularParcialConEscritorio(parcial, escritorio)
+
+    llave.agarrar()
+    piso.interactuarEscritoriosCercanos(alumno)
+
+    assert.that(parcial.seAgarro())
+    assert.that(piso.tieneTodosLosParcialesAgarrados())
+  }
+
+  test "al presionar E sobre la escalera con los parciales agarrados cambia de piso" {
+    juego.reiniciarConfiguracion()
+
+    const primerPiso = new Piso(ancho = 5, largo = 5, posicionDeEntrada = game.at(2, 2))
+    const segundoPiso = new Piso(ancho = 5, largo = 5, posicionDeEntrada = game.at(1, 1))
+    const parcial = new Parcial(position = game.at(4, 4))
+    parcial.agarrar()
+    primerPiso.agregarParcial(parcial)
+    primerPiso.agregarEscalera(new Escalera(position = game.at(2, 2)))
+    juego.agregarPiso(primerPiso)
+    juego.agregarPiso(segundoPiso)
+
+    jugador.establecerPiso(primerPiso)
+    jugador.position(game.at(2, 2))
+    primerPiso.interactuarEscaleraEn(jugador, juego)
+
+    assert.equals(segundoPiso, juego.pisoActual())
+    assert.equals(game.at(1, 1), jugador.position())
+  }
+}

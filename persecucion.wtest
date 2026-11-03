@@ -4,7 +4,7 @@ import profesores.*
 import bancoFijo.*
 import soporteDePruebas.*
 
-describe "Persecución con dos profesores" {
+describe "Profesores que deambulan" {
 
   method pisoConBancos() {
     const piso = new Piso(ancho = 20, largo = 12)
@@ -14,7 +14,7 @@ describe "Persecución con dos profesores" {
     return piso
   }
 
-  test "los dos rodean los bancos, no se superponen y llegan" {
+  test "se mueven al azar, no se superponen y no se salen del piso" {
     const piso = self.pisoConBancos()
     const alumno = new AlumnoDePrueba(position = game.at(7, 4))
     const omar = profesores.omar(game.at(3, 4))
@@ -22,18 +22,17 @@ describe "Persecución con dos profesores" {
     piso.agregarProfesor(omar)
     piso.agregarProfesor(lettuce)
 
-    (1..200).forEach({ i => piso.actualizar(alumno) })
+    const inicioOmar = omar.position()
+    const inicioLettuce = lettuce.position()
+
+    (1..100).forEach({ i => piso.actualizar(alumno) })
 
     assert.notEquals(omar.position(), lettuce.position())
     assert.that(omar.position().x() >= 0 and omar.position().x() < 20)
     assert.that(omar.position().y() >= 0 and omar.position().y() < 12)
     assert.that(lettuce.position().x() >= 0 and lettuce.position().x() < 20)
     assert.that(lettuce.position().y() >= 0 and lettuce.position().y() < 12)
-
-    const distanciaOmar = (omar.position().x() - 7).abs() + (omar.position().y() - 4).abs()
-    const distanciaLettuce = (lettuce.position().x() - 7).abs() + (lettuce.position().y() - 4).abs()
-    assert.that(distanciaOmar <= 1)
-    assert.that(distanciaLettuce <= 4)
+    assert.that(omar.position() != inicioOmar or lettuce.position() != inicioLettuce)
   }
 
   test "las paredes invisibles bloquean el fondo" {
@@ -41,27 +40,5 @@ describe "Persecución con dos profesores" {
     piso.agregarPared(game.at(0, 0))
     assert.notThat(piso.esTransitable(game.at(0, 0)))
     assert.that(piso.esTransitable(game.at(6, 0)))
-  }
-
-  test "siguen al alumno aunque se mueva todos los ticks" {
-    const piso = self.pisoConBancos()
-    const alumno = new AlumnoDePrueba(position = game.at(7, 4))
-    const omar = profesores.omar(game.at(3, 4))
-    const lettuce = profesores.lettuce(game.at(11, 4))
-    piso.agregarProfesor(omar)
-    piso.agregarProfesor(lettuce)
-
-    (1..120).forEach({ i =>
-      alumno.position(game.at(7 + (i % 3), 3 + (i % 2)))
-      piso.actualizar(alumno)
-    })
-
-    assert.notEquals(omar.position(), lettuce.position())
-    const distanciaOmar = (omar.position().x() - alumno.position().x()).abs() +
-                          (omar.position().y() - alumno.position().y()).abs()
-    const distanciaLettuce = (lettuce.position().x() - alumno.position().x()).abs() +
-                             (lettuce.position().y() - alumno.position().y()).abs()
-    assert.that(distanciaOmar < 8)
-    assert.that(distanciaLettuce < 8)
   }
 }

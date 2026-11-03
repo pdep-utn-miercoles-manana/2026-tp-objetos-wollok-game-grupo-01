@@ -103,6 +103,8 @@ class Proyectiles {
 
   method cantidad() = vivos.size()
 
+  method visuales() = vivos
+
   // Deja unos proyectiles ya dibujados afuera del tablero para que el primer
   // disparo no tenga que crear el visual en medio del juego.
   method precargar(cantidad) {

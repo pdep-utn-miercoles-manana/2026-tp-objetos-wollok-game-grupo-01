@@ -19,11 +19,13 @@ object movilidadInvertida {
 object jugador {
     const posicionInicial = game.at(7, 4)
     const vidasIniciales = 3
+    const framesPorMovimiento = 4
 
     var property position = posicionInicial
     var velocidad = 1
     var movilidad = movilidadNormal
-    var pasoAlterno = false
+    var mirandoA = "Derecha"
+    var frame = 0
     var pendrive = null
     var pisoActual = null
 
@@ -48,17 +50,18 @@ object jugador {
     var ticksCongelado = 0
 
     method guardarPendrive(unPendrive) {
-    pendrive = unPendrive
+        pendrive = unPendrive
     }
 
     method tienePendrive() = pendrive != null
 
     method usarPendrive(computadora) {
-    if (self.tienePendrive()) {
-        pendrive.usar(computadora)
-        pendrive = null
+        if (self.tienePendrive()) {
+            pendrive.usar(computadora)
+            pendrive = null
+        }
     }
-   }
+
     method verificarInteraccion() {
         if (pisoActual != null) {
             pisoActual.interactuarCon(self)
@@ -69,7 +72,8 @@ object jugador {
     }
 
 
-    method image() = if (pasoAlterno) "jugadorDerecha2.png" else "jugadorDerecha1.png"
+    // Ej: jugadorArriba1.png ... jugadorArriba4.png
+    method image() = "jugador" + mirandoA + (frame + 1) + ".png.jpg"
 
     // Si está congelado, ignora las teclas
     method moverArriba()    { if (self.puedeMoverse()) movilidad.arriba(self) }
@@ -79,49 +83,32 @@ object jugador {
 
     method puedeMoverse() = !self.estaCongelado()
 
-    // Movimientos reales (con bordes y obstáculos)
-    method irArriba() {
-        const destino = position.up(velocidad)
-        if (self.esTransitable(destino)) {
-            position = destino
-            self.alternarSprite()
-            self.verificarInteraccion()
-        }
-    }
+    // Movimientos reales
+    method irArriba()    { self.avanzar("Arriba",    { p => p.up(1) }) }
+    method irAbajo()     { self.avanzar("Abajo",     { p => p.down(1) }) }
+    method irIzquierda() { self.avanzar("Izquierda", { p => p.left(1) }) }
+    method irDerecha()   { self.avanzar("Derecha",   { p => p.right(1) }) }
 
-    method irAbajo() {
-        const destino = position.down(velocidad)
-        if (self.esTransitable(destino)) {
-            position = destino
-            self.alternarSprite()
-            self.verificarInteraccion()
-        }
+    // Avanza celda por celda (hasta `velocidad` celdas) y se frena en la primera
+    // que no sea transitable. Siempre gira hacia donde apretaste, aunque no avance.
+        method avanzar(sentido, siguiente) {
+        const posicionAnterior = position
+        const pasos = (1..velocidad)
+        mirandoA = sentido
+        pasos.forEach({ i =>
+            const destino = siguiente.apply(position)
+            if (self.esTransitable(destino)) {
+                position = destino
+                self.verificarInteraccion()
+            }
+        })
+        if (position != posicionAnterior) { self.avanzarFrame() }
     }
-
-    method irIzquierda() {
-        const destino = position.left(velocidad)
-        if (self.esTransitable(destino)) {
-            position = destino
-            self.alternarSprite()
-            self.verificarInteraccion()
-        }
-    }
-
-    method irDerecha() {
-        const destino = position.right(velocidad)
-        if (self.esTransitable(destino)) {
-            position = destino
-            self.alternarSprite()
-            self.verificarInteraccion()
-        }
-    }
-
-    method alternarSprite() { pasoAlterno = !pasoAlterno }
+    method avanzarFrame() { frame = (frame + 1) % framesPorMovimiento }
 
     // Controles
     method invertirControles()  { movilidad = movilidadInvertida }
     method restaurarControles() { movilidad = movilidadNormal }
-
 
     // Lo llaman tiza, borrador y huevo. Las vidas no bajan de 0.
     method recibirGolpe(cantidad) {
@@ -138,20 +125,24 @@ object jugador {
 
     method estaCongelado() = ticksCongelado > 0
 
+    method usarObjetosDeLaCelda() {
+        game.colliders(self).forEach({ objeto => objeto.usar(self) })
+    }
     // El piso lo llama una vez por tick (igual que a los profesores)
     method actuar() {
         if (self.estaCongelado()) {
             ticksCongelado -= 1
         }
     }
-    
+
     // ---------- Reinicio ----------
     // Vuelve todo al estado inicial del piso
     method reiniciar() {
         position = posicionInicial
         movilidad = movilidadNormal
         velocidad = 1
-        pasoAlterno = false
+        mirandoA = "Derecha"
+        frame = 0
         vidas = vidasIniciales
         ticksCongelado = 0
         pendrive = null
