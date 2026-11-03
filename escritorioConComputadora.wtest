@@ -1,0 +1,36 @@
+import wollok.game.*
+import escritorioConComputadora.*
+import profesores.*
+
+describe "Tests del escritorio con computadora" {
+
+    test "La descarga tarda 10 segundos y se reinicia correctamente" {
+        const escritorio = new EscritorioConComputadora(
+            position = game.at(3, 3)
+        )
+
+        escritorio.initialize()
+        escritorio.activar()
+
+        assert.that(escritorio.estaDescargando())
+
+       (tiempos.ticks(10) - 1).times({ numeroDeTick =>
+        escritorio.actualizar()
+        })
+
+        // Todavía falta un tick para completar la descarga
+        assert.notThat(escritorio.terminoDescarga())
+
+        // Último tick
+        escritorio.actualizar()
+
+        assert.that(escritorio.terminoDescarga())
+        assert.notThat(escritorio.estaDescargando())
+
+        // Reinicio por derrota
+        escritorio.reiniciar()
+
+        assert.notThat(escritorio.terminoDescarga())
+        assert.notThat(escritorio.estaDescargando())
+    }
+}

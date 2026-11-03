@@ -3,12 +3,15 @@
 
 import wollok.game.*
 import piso.*
+import obstaculos.*
 import proyectiles.*
 import escritorio.*
 import llave.*
 import parcial.*
 import escaleras.*
 import bancoMovil.*
+import pendrive.*
+import escritorioConComputadora.*
 
 describe "Tests de Piso" {
 
@@ -148,15 +151,14 @@ test "El piso no esta completo si falta agarrar un parcial" {
 test "El alumno puede interactuar con un escritorio adyacente" {
     const piso = new Piso(ancho = 10, largo = 8)
 
-    const escritorio = object {
-        var property position = game.at(5, 5)
-        var property interacciones = 0
+    const escritorio = object inherits Obstaculos(position = game.at(5, 5)) {
+    var property interacciones = 0
 
-        method interactuar(alumno) {
+    method interactuar(alumno) {
         interacciones += 1
-        }
+    }
 
-        method estaCerrado() = true
+    method estaCerrado() = true
     }
 
     const alumno = object {
@@ -233,9 +235,7 @@ test "La escalera solicita avanzar cuando el alumno esta sobre ella" {
     }
 
     piso.agregarEscalera(escalera)
-    piso.interactuarEscaleraEn(
-        alumno.position(), alumno, juegoDePrueba
-    )
+    piso.interactuarEscaleraEn(alumno, juegoDePrueba)
 
     assert.equals(1, juegoDePrueba.avances())
 }
@@ -277,22 +277,87 @@ test "Al reiniciar un piso se restauran la llave el escritorio y el parcial" {
     assert.equals(game.at(4, 4), llave.position())
     assert.equals(game.at(6, 6), escritorio.position())
 }
-test "Al reiniciar el piso los bancos vuelven a su posicion inicial" {
+
+test "El pendrive vuelve a estar disponible al reiniciar el piso" {
     const piso = new Piso(ancho = 20, largo = 12)
 
-    const banco = new BancosMoviles(position = game.at(8, 3))
-    banco.initialize()
+    const pendrive = new Pendrive(position = game.at(3, 9))
+    pendrive.initialize()
 
-    piso.agregarObstaculo(banco)
+    const alumno = object {
+        var property position = game.at(3, 9)
+        var pendriveGuardado = null
 
-    banco.moverA(game.at(9, 3))
+        method guardarPendrive(unPendrive) {
+            pendriveGuardado = unPendrive
+        }
 
-    assert.equals(game.at(9, 3), banco.position())
+        method tienePendrive() = pendriveGuardado != null
+    }
 
+    piso.agregarPendrive(pendrive)
+
+    // El jugador recoge el pendrive
+    piso.agarrarPendriveEn(alumno)
+
+    assert.that(pendrive.fueRecogido())
+    assert.that(alumno.tienePendrive())
+
+    // Se reinicia el piso
     piso.reiniciarPiso()
 
-    assert.equals(game.at(8, 3), banco.position())
-    assert.notThat(piso.esTransitable(game.at(8, 3)))
+    assert.notThat(pendrive.fueRecogido())
+    assert.equals(game.at(3, 9), pendrive.position())
+}
+test "Al reiniciar el piso se reinicia la descarga de la computadora" {
+    const piso = new Piso(ancho = 20, largo = 12)
+
+    const escritorio = new EscritorioConComputadora(
+        position = game.at(8, 9)
+    )
+
+    escritorio.initialize()
+    piso.agregarEscritorioConComputadora(escritorio)
+
+    // Comienza la descarga
+    escritorio.activar()
+    escritorio.actualizar()
+
+    assert.that(escritorio.estaDescargando())
+
+    // El jugador pierde y se reinicia el piso
+    piso.reiniciarPiso()
+
+    // La descarga debe volver a su estado inicial
+    assert.notThat(escritorio.estaDescargando())
+    assert.notThat(escritorio.terminoDescarga())
+
+    // Debe poder iniciarse nuevamente
+    escritorio.activar()
+
+    assert.that(escritorio.estaDescargando())
 }
 
 }
+
+
+// ----------- PUEDE SER QUE SE AGRGUE EN ALGUN FUTURO ( NO ESTA DEFINIDO AUN)-----------
+
+
+// test "Al reiniciar el piso los bancos vuelven a su posicion inicial" {
+//     const piso = new Piso(ancho = 20, largo = 12)
+
+//     const banco = new BancosMoviles(position = game.at(8, 3))
+//     banco.initialize()
+
+//     piso.agregarObstaculo(banco)
+
+//     banco.moverA(game.at(9, 3))
+
+//     assert.equals(game.at(9, 3), banco.position())
+
+//     piso.reiniciarPiso()
+
+//     assert.equals(game.at(8, 3), banco.position())
+//     assert.notThat(piso.esTransitable(game.at(8, 3)))
+// }

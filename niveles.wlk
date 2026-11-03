@@ -4,16 +4,25 @@ import profesores.*
 import llave.*
 import obstaculos.*
 import escritorio.*
+import escritorioConComputadora.*
 import escaleras.*
 import bancoMovil.*
 import parcial.*
 import bancoFijo.*
 import cafe.*
 import panfleto.*
+import pendrive.*
+import talonario.*
 
 object niveles {
-    const pisoLettuceYOmar = new Piso(ancho = 20, largo = 12)
+    const plantaBaja = new Piso(ancho = 20,largo = 12,posicionDeEntrada = game.at(2, 2))
+    const pisoLettuceYOmar = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(5,2))
     const pisoGallo = new Piso( ancho = 20, largo = 12, posicionDeEntrada = game.at(7, 4))
+    const pisoFilipoYFermin = new Piso(ancho = 20,largo = 12,posicionDeEntrada = game.at(2, 2))
+    const llaveTercerPiso = new Llave(position = game.at(4, 4))
+    const escritorioTercerPiso = new Escritorio(position = game.at(16, 9))
+    const llaveSegundoParcial = new Llave(position = game.at(11, 4))
+    const escritorioSegundoParcial = new Escritorio(position = game.at(12, 8))
     const llaveSegundoPiso = new Llave(position = game.at(6, 4))
     const escritorioSegundoPiso = new Escritorio(position = game.at(6, 6),llave = llaveSegundoPiso)
     const llavePrimerPiso = new Llave(position = game.at(5, 5)) 
@@ -36,7 +45,7 @@ object niveles {
     const escritorio11 = new Escritorio(position = game.at(9, 1))
 
 
-    
+
 
     method agregarParedesDelFondo(unPiso) {
         // El fondo tiene un hueco negro abajo a la izquierda: esas celdas no
@@ -46,12 +55,25 @@ object niveles {
         })
     }
 
+
+    method configurarPlantaBaja() {
+        const piso = self.pisoPlantaBaja()
+
+        const escaleraPlantaBaja = new Escalera(position = game.at(17, 10))
+
+        piso.agregarEscalera(escaleraPlantaBaja)
+        const talonario = new Talonario(position = game.at(5, 4))
+
+        talonario.initialize()
+        piso.agregarTalonario(talonario)
+    }
+
     method configurarPrimerPiso() {
         const piso = self.primerPiso()
           piso.precargarProyectiles(20)
           self.agregarParedesDelFondo(piso)
-          piso.agregarProfesor(profesores.omar(game.at(7, 2)))
-          piso.agregarProfesor(profesores.lettuce(game.at(11, 3)))
+          //piso.agregarProfesor(profesores.omar(game.at(7, 2)))
+          //piso.agregarProfesor(profesores.lettuce(game.at(11, 3)))
           piso.agregarLlave(llavePrimerPiso)
           piso.agregarEscritorio(escritorioPrimerPiso)
           const parcialPrimerPiso = new Parcial(position = game.at(6, 7))
@@ -112,7 +134,66 @@ object niveles {
         const escaleraSegundoPiso = new Escalera(position = game.at(17, 10))
         piso.agregarEscalera(escaleraSegundoPiso)
     }   
+    method configurarTercerPiso() {
+     const piso = self.tercerPiso()
+     const pendriveTercerPiso = new Pendrive(position = game.at(3, 9))
+     pendriveTercerPiso.initialize()
+     piso.agregarPendrive(pendriveTercerPiso)
+     const filipo = profesores.filipo(game.at(15, 3))
+     piso.agregarProfesor(filipo)
+     const fermin = profesores.fermin(game.at(5, 8))
+     piso.agregarProfesor(fermin)
+        const banco1 = new BancosMoviles(position = game.at(7, 3))
+        const banco2 = new BancosMoviles(position = game.at(10, 6))
+        const banco3 = new BancosMoviles(position = game.at(14, 8))
+
+        banco1.initialize()
+        banco2.initialize()
+        banco3.initialize()
+        escritorioTercerPiso.initialize()
+        llaveTercerPiso.initialize()
+        llaveSegundoParcial.initialize()
+        escritorioSegundoParcial.initialize()
+        
+
+        piso.agregarObstaculo(banco1)
+        piso.agregarObstaculo(banco2)
+        piso.agregarObstaculo(banco3)
+        piso.agregarLlave(llaveTercerPiso)
+        piso.agregarEscritorio(escritorioTercerPiso)
+        const parcialTercerPiso = new Parcial(position = game.at(16, 9))
+        piso.agregarParcial(parcialTercerPiso)
+        piso.vincularParcialConEscritorio(parcialTercerPiso, escritorioTercerPiso)
+        escritorioSegundoParcial.asignarLlave(llaveSegundoParcial)
+        piso.agregarLlave(llaveSegundoParcial)
+        piso.agregarEscritorio(escritorioSegundoParcial)
+        const parcialSegundo = new Parcial(position = game.at(12, 8))
+        piso.agregarParcial(parcialSegundo)
+        piso.vincularParcialConEscritorio(parcialSegundo, escritorioSegundoParcial)
+        piso.vincularEfectoConParcial(parcialTercerPiso, { alumno =>alumno.invertirControles()
+             if (game.running()) {
+              game.say(filipo, "¡Ahí tenés un .flip!")
+               }
+            })
+        piso.vincularEfectoConParcial(parcialSegundo, { alumno =>alumno.congelarPor(2)
+            if (game.running()) {
+                game.say(fermin, "¡Ahí tenés un chiflido!")
+                }
+            })
+        escritorioTercerPiso.asignarLlave(llaveTercerPiso)
+        const escritorioComputadora = new EscritorioConComputadora(position = game.at(8, 9))
+        escritorioComputadora.initialize() 
+        piso.agregarEscritorioConComputadora(escritorioComputadora)
+        const parcialPendrive = new Parcial(position = game.at(8, 9))
+        piso.agregarParcial(parcialPendrive)
+        piso.vincularParcialConComputadora(parcialPendrive)
+        const escaleraFinal = new Escalera(position = game.at(18, 10))
+        piso.agregarEscalera(escaleraFinal)
+
+    }
 
     method primerPiso() = pisoLettuceYOmar
     method segundoPiso() = pisoGallo
+    method tercerPiso() = pisoFilipoYFermin
+    method pisoPlantaBaja() = plantaBaja
 }

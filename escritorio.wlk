@@ -28,9 +28,7 @@ class Escritorio inherits Obstaculos {
     method estaCerrado() = !estaAbierto
 
     method interactuar(alumno) {
-        if (llave != null && self.estaCerrado() && llave.fueRecogida()) {
-            self.abrir()
-        }
+        self.abrir()
     }
 
     override method reiniciar() {

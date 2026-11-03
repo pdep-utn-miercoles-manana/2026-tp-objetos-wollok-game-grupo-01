@@ -19,7 +19,7 @@ describe "Integración de parciales con Piso" {
     const parcial = new Parcial(position = game.at(2, 2))
 
     piso.agregarParcial(parcial)
-    piso.recogerParcialEn(game.at(2, 2))
+    piso.agarrarParcialEn(game.at(2, 2))
 
     assert.that(parcial.seAgarro())
   }
@@ -29,7 +29,7 @@ describe "Integración de parciales con Piso" {
     const parcial = new Parcial(position = game.at(2, 2))
 
     piso.agregarParcial(parcial)
-    piso.recogerParcialEn(game.at(3, 2))
+    piso.agarrarParcialEn(game.at(3, 2))
 
     assert.notThat(parcial.seAgarro())
   }
@@ -44,10 +44,10 @@ describe "Integración de parciales con Piso" {
 
     assert.notThat(piso.tieneTodosLosParcialesAgarrados())
 
-    piso.recogerParcialEn(game.at(1, 1))
+    piso.agarrarParcialEn(game.at(1, 1))
     assert.notThat(piso.tieneTodosLosParcialesAgarrados())
 
-    piso.recogerParcialEn(game.at(2, 2))
+    piso.agarrarParcialEn(game.at(2, 2))
     assert.that(piso.tieneTodosLosParcialesAgarrados())
   }
 
@@ -56,7 +56,7 @@ describe "Integración de parciales con Piso" {
     const parcial = new Parcial(position = game.at(2, 2))
 
     piso.agregarParcial(parcial)
-    piso.recogerParcialEn(game.at(2, 2))
+    piso.agarrarParcialEn(game.at(2, 2))
 
     assert.that(parcial.seAgarro())
 

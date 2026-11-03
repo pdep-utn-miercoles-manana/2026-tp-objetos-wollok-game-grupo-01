@@ -151,4 +151,35 @@ test "El jugador aparece en la entrada del siguiente piso" {
     assert.equals(segundoPiso, juego.pisoActual())
     assert.equals(game.at(2, 2), jugador.position())
 }
+test "Al reiniciar el piso se restauran los controles y el movimiento" {
+    juego.reiniciarConfiguracion()
+
+    const piso = new Piso(
+        ancho = 20,
+        largo = 12,
+        posicionDeEntrada = game.at(5, 5)
+    )
+
+    juego.agregarPiso(piso)
+    jugador.establecerPiso(piso)
+    jugador.reiniciar()
+
+    // Simulamos los efectos de Filipo y Fermín
+    jugador.invertirControles()
+    jugador.congelarPor(2)
+
+    assert.that(jugador.estaCongelado())
+
+    // El jugador pierde y se reinicia el piso
+    juego.reiniciarPisoActual()
+    assert.equals(game.at(5, 5), jugador.position())
+    // El chiflido ya no debe afectarlo
+    assert.notThat(jugador.estaCongelado())
+
+    // Al presionar arriba debe moverse hacia arriba,
+    // no hacia abajo como ocurriría con el .flip
+    jugador.moverArriba()
+    assert.equals(game.at(5, 5).up(1), jugador.position())
+
+}
 }

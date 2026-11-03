@@ -30,11 +30,15 @@ object jugador {
     method establecerPiso(unPiso) {
         pisoActual = unPiso
     }
+    method entrarAlPiso(unPiso) {
+    self.establecerPiso(unPiso)
+    position = unPiso.posicionDeEntrada()
+    }
 
     // Si todavía no hay piso (por ejemplo en un test), uso los bordes del juego.
     method esTransitable(destino) {
         if (pisoActual == null) {
-            return destino.x() >= 0 and destino.x() < game.width() and
+            return destino.x() >= 0 and destino.x() < game.width() &&
                    destino.y() >= 0 and destino.y() < game.height()
         }
         return pisoActual.esTransitable(destino)
@@ -56,8 +60,10 @@ object jugador {
     }
    }
     method verificarInteraccion() {
-    juego.pisoActual().interactuarCon(self)
-   }
+        if (pisoActual != null) {
+            pisoActual.interactuarCon(self)
+        }
+    }
     method recuperarCorazon() {
     vidas = (vidas + 1).min(vidasIniciales)
     }
@@ -148,5 +154,6 @@ object jugador {
         pasoAlterno = false
         vidas = vidasIniciales
         ticksCongelado = 0
+        pendrive = null
     }
 }

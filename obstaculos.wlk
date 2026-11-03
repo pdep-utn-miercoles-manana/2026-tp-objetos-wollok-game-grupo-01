@@ -9,7 +9,10 @@ class Obstaculos {
     method reiniciar() {
         position = posicionInicial
     }
-
+    method estaCercaDe(alumno) {
+    return (self.position().x() - alumno.position().x()).abs() +
+           (self.position().y() - alumno.position().y()).abs() == 1
+    }
     method esPared() = false
 }
 
