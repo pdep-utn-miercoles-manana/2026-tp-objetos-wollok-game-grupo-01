@@ -54,6 +54,11 @@ class Piso{
             game.addVisual(unObstaculo)
         }
 
+        // Pared invisible para las celdas que el fondo muestra fuera del aula.
+        method agregarPared(unaPosicion) {
+            obstaculos.add(new Pared(position = unaPosicion))
+        }
+
         method agregarProfesor(unPorfesor) = profesores.add(unPorfesor)
         method tieneProfesor(unProfesor){
              return profesores.contains(unProfesor)
@@ -154,8 +159,7 @@ class Piso{
         
     }
     method mostrarVisuales() {
-        [profesores, obstaculos, escritorios,
-        escaleras, cafes, panfletos]
+        [profesores, escaleras, cafes, panfletos]
             .forEach({ coleccion =>
                 coleccion.forEach({ elemento =>
                 if (not game.hasVisual(elemento)) {
@@ -163,6 +167,14 @@ class Piso{
                 }
             })
         })
+
+        obstaculos
+            .filter({ obstaculo => not obstaculo.esPared() })
+            .forEach({ obstaculo =>
+                if (not game.hasVisual(obstaculo)) {
+                    game.addVisual(obstaculo)
+                }
+            })
 
         llaves
             .filter({ llave => not llave.fueRecogida() })

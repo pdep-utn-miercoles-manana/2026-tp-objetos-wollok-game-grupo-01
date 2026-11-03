@@ -112,6 +112,7 @@ class Perseguir {
   var property pasos = 1
   var busqueda = null
   var buscando = false
+  var espera = 0
 
   method actuar(profesor, alumno, piso) {
     (1..pasos).forEach({ i => self.intentarAvanzar(profesor, alumno, piso) })
@@ -123,11 +124,13 @@ class Perseguir {
 
     if (origen == destino) {
       buscando = false
+      espera = 0
     } else {
       if (buscadorDeCaminos.caminoDirectoLibre(origen, destino, piso)) {
         const siguiente = self.siguienteDirecto(origen, destino)
         if (self.puedeMoverA(profesor, siguiente, piso)) {
           buscando = false
+          espera = 0
           profesor.position(siguiente)
         } else {
           self.buscarRodeo(profesor, origen, destino, piso)
@@ -138,26 +141,28 @@ class Perseguir {
     }
   }
 
-  // La búsqueda se termina con el destino que había cuando arrancó.
-  // Si el alumno se mueve mientras tanto, no la reinicio: sigo la ruta
-  // vieja y cuando se termina vuelvo a buscar. Antes la reiniciaba en cada
-  // tick y el profesor se quedaba trabado sin avanzar nunca.
+  // Resuelvo la ruta completa de una sola vez y la guardo. Si el alumno se
+  // mueve, sigo la ruta que ya tengo y cuando termina vuelvo a planificar.
+  // Así no se queda quieto varios segundos mientras "piensa" el camino.
   method buscarRodeo(profesor, origen, destino, piso) {
     if (not buscando) {
-      busqueda = new BusquedaIncremental(
-        origen = origen,
-        destino = destino,
-        piso = piso)
-      buscando = true
+      if (espera > 0) {
+        espera -= 1
+      } else {
+        busqueda = new BusquedaIncremental(
+          origen = origen,
+          destino = destino,
+          piso = piso)
+        busqueda.completar()
+        buscando = true
+      }
     }
 
-    if (not busqueda.estaFinalizada()) {
-      busqueda.avanzar()
-    }
-
-    if (busqueda.estaFinalizada()) {
+    if (buscando) {
       if (not busqueda.tienePasosPendientes()) {
+        // No hay camino (o ya se terminó): espero un poco antes de recalcular.
         buscando = false
+        espera = 5
       } else {
         const siguiente = busqueda.siguientePaso()
 
@@ -170,6 +175,10 @@ class Perseguir {
           if (self.puedeMoverA(profesor, siguiente, piso)) {
             profesor.position(siguiente)
             busqueda.consumirSiguientePaso()
+            if (not busqueda.tienePasosPendientes()) {
+              buscando = false
+              espera = 0
+            }
           }
         }
       }
@@ -206,6 +215,7 @@ class Perseguir {
     pasos = 1
     buscando = false
     busqueda = null
+    espera = 0
   }
 }
 

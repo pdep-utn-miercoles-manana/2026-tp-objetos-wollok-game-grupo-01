@@ -13,8 +13,8 @@ import panfleto.*
 
 object niveles {
     const pisoLettuceYOmar = new Piso(ancho = 20, largo = 12)
-    const pisoGallo = new Piso( ancho = 20, largo = 12, posicionDeEntrada = game.at(2, 2))
-    const llaveSegundoPiso = new Llave(position = game.at(4, 4))
+    const pisoGallo = new Piso( ancho = 20, largo = 12, posicionDeEntrada = game.at(7, 4))
+    const llaveSegundoPiso = new Llave(position = game.at(6, 4))
     const escritorioSegundoPiso = new Escritorio(position = game.at(6, 6),llave = llaveSegundoPiso)
     const llavePrimerPiso = new Llave(position = game.at(5, 5)) 
     const escaleraPrimerPiso = new Escalera(position = game.at(19, 9)) 
@@ -38,10 +38,19 @@ object niveles {
 
     
 
+    method agregarParedesDelFondo(unPiso) {
+        // El fondo tiene un hueco negro abajo a la izquierda: esas celdas no
+        // son parte del aula, así que las bloqueo con paredes invisibles.
+        (0..5).forEach({ x =>
+            (0..4).forEach({ y => unPiso.agregarPared(game.at(x, y)) })
+        })
+    }
+
     method configurarPrimerPiso() {
         const piso = self.primerPiso()
           piso.precargarProyectiles(20)
-          piso.agregarProfesor(profesores.omar(game.at(3, 3)))
+          self.agregarParedesDelFondo(piso)
+          piso.agregarProfesor(profesores.omar(game.at(7, 2)))
           piso.agregarProfesor(profesores.lettuce(game.at(11, 3)))
           piso.agregarLlave(llavePrimerPiso)
           piso.agregarEscritorio(escritorioPrimerPiso)
@@ -76,6 +85,7 @@ object niveles {
     }
     method configurarSegundoPiso() {
         const piso = self.segundoPiso()
+        self.agregarParedesDelFondo(piso)
         llaveSegundoPiso.initialize()
         escritorioSegundoPiso.initialize()
 

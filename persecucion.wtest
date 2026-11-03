@@ -35,6 +35,13 @@ describe "Persecución con dos profesores" {
     assert.that(distanciaLettuce <= 1)
   }
 
+  test "las paredes invisibles bloquean el fondo" {
+    const piso = new Piso(ancho = 20, largo = 12)
+    piso.agregarPared(game.at(0, 0))
+    assert.notThat(piso.esTransitable(game.at(0, 0)))
+    assert.that(piso.esTransitable(game.at(6, 0)))
+  }
+
   test "siguen al alumno aunque se mueva todos los ticks" {
     const piso = self.pisoConBancos()
     const alumno = new AlumnoDePrueba(position = game.at(7, 4))

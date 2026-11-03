@@ -149,6 +149,15 @@ class BusquedaIncremental {
         (1..10).forEach({ i => self.procesarUnaCelda() })
     }
 
+    // Resuelve toda la búsqueda de una vez. La uso cuando el profe arranca
+    // a perseguir: así no se queda quieto varios segundos mientras busca.
+    method completar() {
+        if (not finalizada) {
+            self.procesarUnaCelda()
+            self.completar()
+        }
+    }
+
     method procesarUnaCelda() {
         if (not finalizada) {
             if (indice >= pendientes.size()) {
