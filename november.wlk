@@ -11,14 +11,23 @@ object juego{
 
     method mostrarPantallaInicio() {
         pantallaInicio.mostrar()
-        keyboard.enter().onPressDo({ self.empezar() })
-        keyboard.space().onPressDo({ self.empezar() })
+        keyboard.enter().onPressDo({ self.avanzarInicio() })
+        keyboard.space().onPressDo({ self.avanzarInicio() })
+        game.onClickDo({ posicion => self.avanzarInicio() })
+    }
+
+    method avanzarInicio() {
+        if (pantallaInicio.enMenu()) {
+            self.empezar()
+        } else {
+            pantallaInicio.avanzar()
+        }
     }
 
     method empezar() {
         if (not empezado) {
             empezado = true
-            pantallaInicio.ocultar()
+            pantallaInicio.terminar()
             self.iniciar()
         }
     }
