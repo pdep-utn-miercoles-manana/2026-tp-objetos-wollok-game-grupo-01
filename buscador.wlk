@@ -190,6 +190,8 @@ method guardarRuta(nodo) {
     method ruta() = rutaInvertida
     method tienePasosPendientes() = not rutaInvertida.isEmpty()
 
+    method siguientePaso() = rutaInvertida.last()
+
     method consumirSiguientePaso() {
     const siguiente = rutaInvertida.last()
     rutaInvertida.remove(siguiente)

@@ -58,6 +58,10 @@ class Piso{
         method tieneProfesor(unProfesor){
              return profesores.contains(unProfesor)
         }
+
+        method hayProfesorEn(unaPosicion, excepto) {
+            return profesores.any({ p => p != excepto and p.position() == unaPosicion })
+        }
         method actuarProfesores(unAlumno){
             profesores
                     .forEach({profesor => profesor.actuar(unAlumno,self)})

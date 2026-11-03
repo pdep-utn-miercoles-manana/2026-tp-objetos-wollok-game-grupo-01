@@ -112,7 +112,6 @@ class Perseguir {
   var property pasos = 1
   var busqueda = null
   var buscando = false
-  var destinoBuscado = null
 
   method actuar(profesor, alumno, piso) {
     (1..pasos).forEach({ i => self.intentarAvanzar(profesor, alumno, piso) })
@@ -126,37 +125,63 @@ class Perseguir {
       buscando = false
     } else {
       if (buscadorDeCaminos.caminoDirectoLibre(origen, destino, piso)) {
-        buscando = false
-        profesor.position(self.siguienteDirecto(origen, destino))
+        const siguiente = self.siguienteDirecto(origen, destino)
+        if (self.puedeMoverA(profesor, siguiente, piso)) {
+          buscando = false
+          profesor.position(siguiente)
+        } else {
+          self.buscarRodeo(profesor, origen, destino, piso)
+        }
       } else {
-        // Si el alumno se movió, la ruta vieja ya no sirve: arranco de nuevo.
-        if (not buscando or destinoBuscado != destino) {
-          busqueda = new BusquedaIncremental(
-            origen = origen,
-            destino = destino,
-            piso = piso)
-          destinoBuscado = destino
-          buscando = true
-        }
+        self.buscarRodeo(profesor, origen, destino, piso)
+      }
+    }
+  }
 
-        if (not busqueda.estaFinalizada()) {
-          busqueda.avanzar()
-        }
+  // La búsqueda se termina con el destino que había cuando arrancó.
+  // Si el alumno se mueve mientras tanto, no la reinicio: sigo la ruta
+  // vieja y cuando se termina vuelvo a buscar. Antes la reiniciaba en cada
+  // tick y el profesor se quedaba trabado sin avanzar nunca.
+  method buscarRodeo(profesor, origen, destino, piso) {
+    if (not buscando) {
+      busqueda = new BusquedaIncremental(
+        origen = origen,
+        destino = destino,
+        piso = piso)
+      buscando = true
+    }
 
-        if (busqueda.estaFinalizada()) {
-          if (busqueda.tienePasosPendientes()) {
-            const siguiente = busqueda.consumirSiguientePaso()
-            if (piso.esTransitable(siguiente) or siguiente == destino) {
-              profesor.position(siguiente)
-            } else {
-              buscando = false
-            }
-          } else {
-            buscando = false
+    if (not busqueda.estaFinalizada()) {
+      busqueda.avanzar()
+    }
+
+    if (busqueda.estaFinalizada()) {
+      if (not busqueda.tienePasosPendientes()) {
+        buscando = false
+      } else {
+        const siguiente = busqueda.siguientePaso()
+
+        // Si el paso no es contiguo, la ruta quedó vieja: replanifico.
+        if (not self.esAdyacente(origen, siguiente)) {
+          buscando = false
+        } else {
+          // Si otro profesor está en esa celda, espero un tick.
+          // No consumo la ruta para no perder el paso.
+          if (self.puedeMoverA(profesor, siguiente, piso)) {
+            profesor.position(siguiente)
+            busqueda.consumirSiguientePaso()
           }
         }
       }
     }
+  }
+
+  method puedeMoverA(profesor, posicion, piso) {
+    return piso.esTransitable(posicion) and not piso.hayProfesorEn(posicion, profesor)
+  }
+
+  method esAdyacente(actual, siguiente) {
+    return (actual.x() - siguiente.x()).abs() + (actual.y() - siguiente.y()).abs() == 1
   }
 
   method siguienteDirecto(origen, destino) {
@@ -180,6 +205,7 @@ class Perseguir {
   method reiniciar() {
     pasos = 1
     buscando = false
+    busqueda = null
   }
 }
 

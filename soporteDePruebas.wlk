@@ -20,6 +20,9 @@ class PisoDePrueba {
   method agregarProyectil(proyectil) { proyectiles.agregar(proyectil) }
 
   method avanzarProyectiles(alumno) { proyectiles.avanzar(alumno) }
+
+  // En el piso de prueba no hay otros profesores.
+  method hayProfesorEn(unaPosicion, excepto) = false
 }
 
 // Un alumno de mentira con lo mínimo: posición, vida y congelamiento.

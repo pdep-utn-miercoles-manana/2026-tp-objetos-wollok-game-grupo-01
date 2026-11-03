@@ -1,0 +1,59 @@
+import wollok.game.*
+import piso.*
+import profesores.*
+import bancoFijo.*
+import soporteDePruebas.*
+
+describe "Persecución con dos profesores" {
+
+  method pisoConBancos() {
+    const piso = new Piso(ancho = 20, largo = 12)
+    piso.agregarObstaculo(new BancosFijos(position = game.at(6, 4)))
+    piso.agregarObstaculo(new BancosFijos(position = game.at(8, 4)))
+    return piso
+  }
+
+  test "los dos rodean los bancos, no se superponen y llegan" {
+    const piso = self.pisoConBancos()
+    const alumno = new AlumnoDePrueba(position = game.at(7, 4))
+    const omar = profesores.omar(game.at(3, 4))
+    const lettuce = profesores.lettuce(game.at(11, 4))
+    piso.agregarProfesor(omar)
+    piso.agregarProfesor(lettuce)
+
+    (1..200).forEach({ i => piso.actualizar(alumno) })
+
+    assert.notEquals(omar.position(), lettuce.position())
+    assert.that(omar.position().x() >= 0 and omar.position().x() < 20)
+    assert.that(omar.position().y() >= 0 and omar.position().y() < 12)
+    assert.that(lettuce.position().x() >= 0 and lettuce.position().x() < 20)
+    assert.that(lettuce.position().y() >= 0 and lettuce.position().y() < 12)
+
+    const distanciaOmar = (omar.position().x() - 7).abs() + (omar.position().y() - 4).abs()
+    const distanciaLettuce = (lettuce.position().x() - 7).abs() + (lettuce.position().y() - 4).abs()
+    assert.that(distanciaOmar <= 1)
+    assert.that(distanciaLettuce <= 1)
+  }
+
+  test "siguen al alumno aunque se mueva todos los ticks" {
+    const piso = self.pisoConBancos()
+    const alumno = new AlumnoDePrueba(position = game.at(7, 4))
+    const omar = profesores.omar(game.at(3, 4))
+    const lettuce = profesores.lettuce(game.at(11, 4))
+    piso.agregarProfesor(omar)
+    piso.agregarProfesor(lettuce)
+
+    (1..120).forEach({ i =>
+      alumno.position(game.at(7 + (i % 3), 3 + (i % 2)))
+      piso.actualizar(alumno)
+    })
+
+    assert.notEquals(omar.position(), lettuce.position())
+    const distanciaOmar = (omar.position().x() - alumno.position().x()).abs() +
+                          (omar.position().y() - alumno.position().y()).abs()
+    const distanciaLettuce = (lettuce.position().x() - alumno.position().x()).abs() +
+                             (lettuce.position().y() - alumno.position().y()).abs()
+    assert.that(distanciaOmar < 8)
+    assert.that(distanciaLettuce < 8)
+  }
+}
