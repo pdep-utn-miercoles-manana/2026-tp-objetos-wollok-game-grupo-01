@@ -57,6 +57,7 @@ object jugador {
    }
     method verificarInteraccion() {
     juego.pisoActual().interactuarCon(self)
+    juego.pisoActual().interactuarEscaleraEn(self.position(), self, juego)
    }
     method recuperarCorazon() {
     vidas = (vidas + 1).min(vidasIniciales)
