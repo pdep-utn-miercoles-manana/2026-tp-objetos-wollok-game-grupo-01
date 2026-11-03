@@ -119,12 +119,26 @@ class Perseguir {
   method intentarAvanzar(profesor, alumno, piso) {
     const origen = profesor.position()
     const destino = profesor.objetivo(alumno)
+    const objetivo = if (piso.hayProfesorEn(destino, profesor))
+      self.celdaCerca(destino, piso, profesor)
+    else
+      destino
 
-    if (origen == destino) {
+    if (origen == objetivo) {
       anterior = game.at(-1, -1)
-    } else if (not piso.hayProfesorEn(destino, profesor)) {
-      self.moverHacia(profesor, origen, destino, piso)
+    } else {
+      self.moverHacia(profesor, origen, objetivo, piso)
     }
+  }
+
+  // Si otro profesor ya está sobre el alumno, este se conforma con quedar
+  // pegado a una celda libre al lado. Así no se queda parado a mitad de camino.
+  method celdaCerca(destino, piso, profesor) {
+    const opciones = [destino.up(1), destino.down(1), destino.left(1), destino.right(1)]
+    const libres = opciones.filter({ p =>
+      piso.esTransitable(p) and not piso.hayProfesorEn(p, profesor)
+    })
+    return if (libres.isEmpty()) destino else libres.first()
   }
 
   // Movimiento directo con esquive local. No hago BFS en cada tick:
