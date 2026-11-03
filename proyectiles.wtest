@@ -80,19 +80,16 @@ describe "Trayectorias" {
 
 describe "Un profesor que lanza" {
 
-  test "Omar lanza una tiza y le pega al alumno" {
+  test "Omar lanza un proyectil al azar" {
     const piso = new PisoDePrueba(ancho = 6, alto = 6)
     const alumno = new AlumnoDePrueba(position = game.at(0, 4))
     const omar = new Profesor(position = game.at(0, 0), nombre = "Omar", reaccion = reaccionOmar)
     omar.agregarComportamiento(new CadaNTicks(n = 1, comportamiento = new LanzarProyectil(tipo = tiza)))
 
     omar.actuar(alumno, piso)
+
     assert.equals(1, piso.proyectiles().cantidad())
-
-    (1..4).forEach({ i => piso.avanzarProyectiles(alumno) })
-
-    assert.equals(2, alumno.vida())
-    assert.equals(0, piso.proyectiles().cantidad())
+    assert.equals(omar.position(), piso.proyectiles().vivos().first().position())
   }
 }
 

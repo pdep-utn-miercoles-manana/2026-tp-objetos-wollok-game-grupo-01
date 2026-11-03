@@ -102,6 +102,7 @@ const escritorioPrimerPiso = new Escritorio(
     }
     method configurarSegundoPiso() {
         const piso = self.segundoPiso()
+        piso.precargarProyectiles(20)
         self.agregarParedesDelFondo(piso)
         llaveSegundoPiso.initialize()
         escritorioSegundoPiso.initialize()

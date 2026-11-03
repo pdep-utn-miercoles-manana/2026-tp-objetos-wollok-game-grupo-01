@@ -148,7 +148,7 @@ class Piso{
 
     method ocultarVisuales() {
         [profesores, obstaculos, escritorios, llaves,
-        escaleras, cafes, panfletos, parciales]
+        escaleras, cafes, panfletos, parciales, proyectiles.visuales()]
                 .forEach({ coleccion =>
                  coleccion.forEach({ elemento =>
                     if (game.hasVisual(elemento)) {
@@ -159,7 +159,7 @@ class Piso{
         
     }
     method mostrarVisuales() {
-        [profesores, escaleras, cafes, panfletos]
+        [profesores, escaleras, cafes, panfletos, proyectiles.visuales()]
             .forEach({ coleccion =>
                 coleccion.forEach({ elemento =>
                 if (not game.hasVisual(elemento)) {
@@ -213,7 +213,22 @@ class Piso{
     self.recogerLlaveEn(alumno.position())
     self.recogerCafeEn(alumno.position(), alumno)
     self.recogerPanfletoEn(alumno.position(), alumno)
-    self.interactuarEscritorioEn(alumno.position(), alumno)
+    self.recogerParcialSueltoEn(alumno.position())
+    self.interactuarEscritoriosCercanos(alumno)
+    }
+
+    method parcialVinculado(unParcial) {
+        return parcialesConEscritorio.any({ relacion => relacion.first() == unParcial })
+    }
+
+    method recogerParcialSueltoEn(unaPosicion) {
+        parciales
+            .filter({ parcial =>
+                parcial.position() == unaPosicion &&
+                not parcial.seAgarro() &&
+                not self.parcialVinculado(parcial)
+            })
+            .forEach({ parcial => parcial.agarrar() })
     }
 
 
