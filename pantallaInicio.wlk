@@ -25,13 +25,16 @@ class ImagenInicio {
 
 object pantallaInicio {
 
+  // Panel oscuro semitransparente detrás del texto (assets/panelTexto.png)
+  const panel = new ImagenInicio(position = game.at(2, 1), imagen = "panelTexto.png")
+
   const titulo = new TextoInicio(position = game.at(4, 10), contenido = "NOVEMBER IS COMING", colorActual = "FFFFFFFF")
   const subtitulo = new TextoInicio(position = game.at(5, 9), contenido = "UTN FRBA - PdeP", colorActual = "FFD166FF")
-  const linea1 = new TextoInicio(position = game.at(5, 7), contenido = "", colorActual = "E8E8E8FF")
-  const linea2 = new TextoInicio(position = game.at(5, 6), contenido = "", colorActual = "E8E8E8FF")
-  const linea3 = new TextoInicio(position = game.at(5, 5), contenido = "", colorActual = "E8E8E8FF")
+  const linea1 = new TextoInicio(position = game.at(5, 7), contenido = "", colorActual = "F2F2F2FF")
+  const linea2 = new TextoInicio(position = game.at(5, 6), contenido = "", colorActual = "F2F2F2FF")
+  const linea3 = new TextoInicio(position = game.at(5, 5), contenido = "", colorActual = "F2F2F2FF")
   const menu1 = new TextoInicio(position = game.at(5, 5), contenido = "", colorActual = "FFFFFFFF")
-  const menu2 = new TextoInicio(position = game.at(5, 4), contenido = "", colorActual = "888888FF")
+  const menu2 = new TextoInicio(position = game.at(5, 4), contenido = "", colorActual = "BBBBBBFF")
   const prompt = new TextoInicio(position = game.at(5, 2), contenido = "", colorActual = "00FF88FF")
 
   const jugadorIntro = new ImagenInicio(position = game.at(0, 0), imagen = "jugadorDerecha1.png")
@@ -39,6 +42,7 @@ object pantallaInicio {
   const lettuceIntro = new ImagenInicio(position = game.at(10, 0), imagen = "letucce.png")
 
   const visuales = [
+    panel,
     titulo, subtitulo, linea1, linea2, linea3,
     menu1, menu2, prompt,
     jugadorIntro, omarIntro, lettuceIntro
@@ -53,7 +57,7 @@ object pantallaInicio {
       activa = true
       fase = 0
       frame = 0
-      game.boardGround("fondoInicio.png")
+      game.boardGround("fondoInicio.jpg")
       visuales.forEach({ visual =>
         if (not game.hasVisual(visual)) {
           game.addVisual(visual)
@@ -86,35 +90,35 @@ object pantallaInicio {
   method actualizarFase() {
     if (fase == 0) {
       subtitulo.cambiar("UTN FRBA - PdeP", "FFD166FF")
-      linea1.cambiar("", "E8E8E8FF")
-      linea2.cambiar("", "E8E8E8FF")
-      linea3.cambiar("", "E8E8E8FF")
+      linea1.cambiar("", "F2F2F2FF")
+      linea2.cambiar("", "F2F2F2FF")
+      linea3.cambiar("", "F2F2F2FF")
       menu1.cambiar("", "FFFFFFFF")
-      menu2.cambiar("", "888888FF")
+      menu2.cambiar("", "BBBBBBFF")
       prompt.cambiar("PRESIONÁ ENTER O HACÉ CLIC", "00FF88FF")
     } else if (fase == 1) {
       subtitulo.cambiar("LA TRAMA", "FFD166FF")
-      linea1.cambiar("Es noviembre en la facultad.", "E8E8E8FF")
-      linea2.cambiar("Los parciales se acumulan y los profes no perdonan.", "E8E8E8FF")
-      linea3.cambiar("Recorré los pisos y juntá todos los parciales.", "E8E8E8FF")
+      linea1.cambiar("Es noviembre en la facultad.", "F2F2F2FF")
+      linea2.cambiar("Los parciales se acumulan y los profes no perdonan.", "F2F2F2FF")
+      linea3.cambiar("Recorré los pisos y juntá todos los parciales.", "F2F2F2FF")
       menu1.cambiar("", "FFFFFFFF")
-      menu2.cambiar("", "888888FF")
+      menu2.cambiar("", "BBBBBBFF")
       prompt.cambiar("ENTER / CLIC PARA SEGUIR", "9FD8FFFF")
     } else if (fase == 2) {
       subtitulo.cambiar("CÓMO JUGAR", "FFD166FF")
-      linea1.cambiar("Flechas: moverte.", "E8E8E8FF")
-      linea2.cambiar("E: interactuar con escritorios.", "E8E8E8FF")
-      linea3.cambiar("Pisá la escalera para cambiar de piso.", "E8E8E8FF")
+      linea1.cambiar("Flechas: moverte.", "F2F2F2FF")
+      linea2.cambiar("E: interactuar con escritorios.", "F2F2F2FF")
+      linea3.cambiar("Pisá la escalera para cambiar de piso.", "F2F2F2FF")
       menu1.cambiar("", "FFFFFFFF")
-      menu2.cambiar("", "888888FF")
+      menu2.cambiar("", "BBBBBBFF")
       prompt.cambiar("ENTER / CLIC PARA SEGUIR", "9FD8FFFF")
     } else {
       subtitulo.cambiar("MENÚ PRINCIPAL", "FFD166FF")
-      linea1.cambiar("", "E8E8E8FF")
-      linea2.cambiar("", "E8E8E8FF")
-      linea3.cambiar("", "E8E8E8FF")
+      linea1.cambiar("", "F2F2F2FF")
+      linea2.cambiar("", "F2F2F2FF")
+      linea3.cambiar("", "F2F2F2FF")
       menu1.cambiar("♥ INICIAR NUEVO JUEGO", "FFFFFFFF")
-      menu2.cambiar("CARGAR PARTIDA", "777777FF")
+      menu2.cambiar("CARGAR PARTIDA", "BBBBBBFF")
       prompt.cambiar("PRESIONE ENTER O CLIC", "00FF88FF")
     }
   }
@@ -132,7 +136,7 @@ object pantallaInicio {
       if (fase == 3) {
         menu1.cambiar(if (frame % 8 < 4) "♥ INICIAR NUEVO JUEGO" else "  INICIAR NUEVO JUEGO", "FFFFFFFF")
       }
-      prompt.cambiar(prompt.text(), if (frame % 8 < 4) "00FF88FF" else "007744FF")
+      prompt.cambiar(prompt.text(), if (frame % 8 < 4) "00FF88FF" else "00AA55FF")
     }
   }
 }

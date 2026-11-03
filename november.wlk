@@ -3,6 +3,7 @@ import jugador.*
 import niveles.*
 import profesores.*
 import pantallaInicio.*
+import indicadorVidas.*
 object juego{
 
     const pisos = []
@@ -44,6 +45,7 @@ object juego{
 
             jugador.establecerPiso(self.pisoActual())
             game.addVisual(jugador)
+            game.addVisual(indicadorVidas)
             keyboard.up().onPressDo({ jugador.moverArriba() })
             keyboard.down().onPressDo({ jugador.moverAbajo() })
             keyboard.left().onPressDo({ jugador.moverIzquierda() })

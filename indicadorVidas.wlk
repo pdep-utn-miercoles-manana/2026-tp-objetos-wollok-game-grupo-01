@@ -2,17 +2,15 @@ import wollok.game.*
 import jugador.*
 
 object indicadorVidas {
+    method position() = game.at(0, 1)
 
     method image() {
-        if (jugador.vidas() == 3) {
-            return "./assets/tresvidas.png"
+        if (jugador.vidas() >= 3) {
+            return "tresvidas.png"
         }
         if (jugador.vidas() == 2) {
-            return "./assets/dosvidas.png"
+            return "dosvidas.png"
         }
-        if (jugador.vidas() == 1) {
-            return "./assets/unavida.png"
-        }
-        return "./assets/unavida.png"
+        return "unavida.png"
     }
 }
