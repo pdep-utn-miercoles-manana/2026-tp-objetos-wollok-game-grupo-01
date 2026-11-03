@@ -110,9 +110,7 @@ object quieto {
 
 class Perseguir {
   var property pasos = 1
-  var busqueda = null
-  var buscando = false
-  var espera = 0
+  var anterior = game.at(-1, -1)
 
   method actuar(profesor, alumno, piso) {
     (1..pasos).forEach({ i => self.intentarAvanzar(profesor, alumno, piso) })
@@ -123,89 +121,68 @@ class Perseguir {
     const destino = profesor.objetivo(alumno)
 
     if (origen == destino) {
-      buscando = false
-      espera = 0
-    } else {
-      if (buscadorDeCaminos.caminoDirectoLibre(origen, destino, piso)) {
-        const siguiente = self.siguienteDirecto(origen, destino)
-        if (self.puedeMoverA(profesor, siguiente, piso)) {
-          buscando = false
-          espera = 0
-          profesor.position(siguiente)
-        } else {
-          self.buscarRodeo(profesor, origen, destino, piso)
-        }
-      } else {
-        self.buscarRodeo(profesor, origen, destino, piso)
-      }
+      anterior = game.at(-1, -1)
+    } else if (not piso.hayProfesorEn(destino, profesor)) {
+      self.moverHacia(profesor, origen, destino, piso)
     }
   }
 
-  // Resuelvo la ruta completa de una sola vez y la guardo. Si el alumno se
-  // mueve, sigo la ruta que ya tengo y cuando termina vuelvo a planificar.
-  // Así no se queda quieto varios segundos mientras "piensa" el camino.
-  method buscarRodeo(profesor, origen, destino, piso) {
-    if (not buscando) {
-      if (espera > 0) {
-        espera -= 1
-      } else {
-        busqueda = new BusquedaIncremental(
-          origen = origen,
-          destino = destino,
-          piso = piso)
-        busqueda.completar()
-        buscando = true
-      }
-    }
+  // Movimiento directo con esquive local. No hago BFS en cada tick:
+  // el piso es chico y los obstáculos están dispersos, así el profe se mueve
+  // enseguida y no se queda esperando a que termine una búsqueda.
+  method moverHacia(profesor, origen, destino, piso) {
+    const dx = destino.x() - origen.x()
+    const dy = destino.y() - origen.y()
+    const candidatos = []
 
-    if (buscando) {
-      if (not busqueda.tienePasosPendientes()) {
-        // No hay camino (o ya se terminó): espero un poco antes de recalcular.
-        buscando = false
-        espera = 5
-      } else {
-        const siguiente = busqueda.siguientePaso()
-
-        // Si el paso no es contiguo, la ruta quedó vieja: replanifico.
-        if (not self.esAdyacente(origen, siguiente)) {
-          buscando = false
-        } else {
-          // Si otro profesor está en esa celda, espero un tick.
-          // No consumo la ruta para no perder el paso.
-          if (self.puedeMoverA(profesor, siguiente, piso)) {
-            profesor.position(siguiente)
-            busqueda.consumirSiguientePaso()
-            if (not busqueda.tienePasosPendientes()) {
-              buscando = false
-              espera = 0
-            }
-          }
-        }
-      }
+    if (dx != 0) {
+      candidatos.add(if (dx > 0) origen.right(1) else origen.left(1))
     }
+    if (dy != 0) {
+      candidatos.add(if (dy > 0) origen.up(1) else origen.down(1))
+    }
+    if (dx != 0) {
+      candidatos.add(origen.up(1))
+      candidatos.add(origen.down(1))
+    }
+    if (dy != 0) {
+      candidatos.add(origen.left(1))
+      candidatos.add(origen.right(1))
+    }
+    candidatos.add(origen.up(1))
+    candidatos.add(origen.down(1))
+    candidatos.add(origen.left(1))
+    candidatos.add(origen.right(1))
+
+    const libres = candidatos.filter({ p =>
+      self.puedeMoverA(profesor, p, piso) and not self.esAnterior(p)
+    })
+    const todos = candidatos.filter({ p => self.puedeMoverA(profesor, p, piso) })
+    const elegido = if (not libres.isEmpty())
+      libres.first()
+    else if (not todos.isEmpty())
+      todos.first()
+    else
+      origen
+
+    if (elegido == origen) {
+      return false
+    } else {
+      return self.moverA(profesor, origen, elegido)
+    }
+  }
+
+  method moverA(profesor, origen, destino) {
+    profesor.position(destino)
+    anterior = origen
+    return true
   }
 
   method puedeMoverA(profesor, posicion, piso) {
     return piso.esTransitable(posicion) and not piso.hayProfesorEn(posicion, profesor)
   }
 
-  method esAdyacente(actual, siguiente) {
-    return (actual.x() - siguiente.x()).abs() + (actual.y() - siguiente.y()).abs() == 1
-  }
-
-  method siguienteDirecto(origen, destino) {
-    if (origen.x() != destino.x()) {
-      return if (origen.x() < destino.x())
-        origen.right(1)
-      else
-        origen.left(1)
-    }
-
-    return if (origen.y() < destino.y())
-      origen.up(1)
-    else
-      origen.down(1)
-  }
+  method esAnterior(posicion) = posicion == anterior
 
   method acelerar() {
     pasos += 1
@@ -213,9 +190,7 @@ class Perseguir {
 
   method reiniciar() {
     pasos = 1
-    buscando = false
-    busqueda = null
-    espera = 0
+    anterior = game.at(-1, -1)
   }
 }
 

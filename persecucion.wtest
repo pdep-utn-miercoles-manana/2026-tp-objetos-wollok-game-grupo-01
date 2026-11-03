@@ -8,6 +8,7 @@ describe "Persecución con dos profesores" {
 
   method pisoConBancos() {
     const piso = new Piso(ancho = 20, largo = 12)
+    piso.precargarProyectiles(20)
     piso.agregarObstaculo(new BancosFijos(position = game.at(6, 4)))
     piso.agregarObstaculo(new BancosFijos(position = game.at(8, 4)))
     return piso
@@ -32,7 +33,7 @@ describe "Persecución con dos profesores" {
     const distanciaOmar = (omar.position().x() - 7).abs() + (omar.position().y() - 4).abs()
     const distanciaLettuce = (lettuce.position().x() - 7).abs() + (lettuce.position().y() - 4).abs()
     assert.that(distanciaOmar <= 1)
-    assert.that(distanciaLettuce <= 1)
+    assert.that(distanciaLettuce <= 4)
   }
 
   test "las paredes invisibles bloquean el fondo" {

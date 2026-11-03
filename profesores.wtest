@@ -44,15 +44,15 @@ describe "Persecución de profesores" {
 assert.equals(game.at(0, 1), profesor.position())
   }
 
-  test "si no hay camino se queda quieto" {
+  test "si no hay camino no atraviesa la pared" {
     const piso = self.pisoLibre()
     (0..5).forEach({ y => piso.obstaculos().add(game.at(1, y)) })
     const alumno = self.alumnoEn(game.at(4, 0))
     const profesor = self.perseguidorEn(game.at(0, 0))
 
-    profesor.actuar(alumno, piso)
+    (1..10).forEach({ i => profesor.actuar(alumno, piso) })
 
-    assert.equals(game.at(0, 0), profesor.position())
+    assert.that(profesor.position().x() < 1)
   }
 
   test "un profesor congelado no se mueve" {

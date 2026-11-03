@@ -134,13 +134,12 @@ class BusquedaIncremental {
     const pendientes = []
     const visitados = #{}
 
-    var indice = 0
     var finalizada = false
     var primerPaso = null
     const rutaInvertida = []
 
     method initialize() {
-        pendientes.add([origen, origen])
+        pendientes.add([origen, origen, null, 0])
         visitados.add(origen)
         primerPaso = origen
     }
@@ -158,13 +157,32 @@ class BusquedaIncremental {
         }
     }
 
+    // A*: en vez de sacar siempre el primero de la cola, saco el que está
+    // más cerca del destino (costo recorrido + distancia Manhattan).
+    method mejorPendiente() {
+        var mejor = 0
+        (0..pendientes.size() - 1).forEach({ i =>
+            if (self.prioridad(pendientes.get(i)) < self.prioridad(pendientes.get(mejor))) {
+                mejor = i
+            }
+        })
+        return mejor
+    }
+
+    method prioridad(nodo) {
+        const posicion = nodo.first()
+        return nodo.get(3) +
+            (posicion.x() - destino.x()).abs() +
+            (posicion.y() - destino.y()).abs()
+    }
+
     method procesarUnaCelda() {
         if (not finalizada) {
-            if (indice >= pendientes.size()) {
+            if (pendientes.isEmpty()) {
                 finalizada = true
             } else {
-                const actual = pendientes.get(indice)
-                indice += 1
+                const actual = pendientes.get(self.mejorPendiente())
+                pendientes.remove(actual)
 
                 const posicion = actual.first()
                 const primerPasoActual = actual.get(1)
@@ -182,7 +200,8 @@ class BusquedaIncremental {
                         pendientes.add([
                           p,
                           if (posicion == origen) p else primerPasoActual,
-                          actual
+                          actual,
+                          actual.get(3) + 1
                         ])
                     })
                 }
