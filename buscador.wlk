@@ -146,7 +146,7 @@ class BusquedaIncremental {
     }
 
     method avanzar() {
-        (1..5).forEach({ i => self.procesarUnaCelda() })
+        (1..10).forEach({ i => self.procesarUnaCelda() })
     }
 
     method procesarUnaCelda() {
