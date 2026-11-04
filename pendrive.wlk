@@ -4,7 +4,7 @@ class Pendrive inherits Obstaculos {
 
     var recogido = false
 
-    method image() = "llaves.png"
+    method image() = "pendrive.png"
 
     method fueRecogido() = recogido
 

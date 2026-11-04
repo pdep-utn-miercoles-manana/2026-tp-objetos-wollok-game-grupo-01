@@ -40,7 +40,6 @@ object juego{
     }
 
         method iniciar() {
-            game.boardGround("fondoPiso.png")
             niveles.configurarPlantaBaja()
             niveles.configurarPrimerPiso()
             niveles.configurarSegundoPiso()
@@ -54,6 +53,7 @@ object juego{
             niveles.primerPiso().ocultarVisuales()
             niveles.segundoPiso().ocultarVisuales()
             niveles.tercerPiso().ocultarVisuales()
+            game.boardGround(self.pisoActual().fondo())
 
             jugador.entrarAlPiso(self.pisoActual())
             game.addVisual(jugador)
@@ -113,6 +113,7 @@ object juego{
             if (self.condicionOkDePasarEntrePisos()) {
                 self.pisoActual().ocultarVisuales()
                 numeroDePisoActual += 1
+                game.boardGround(self.pisoActual().fondo())
                 jugador.entrarAlPiso(self.pisoActual())
                 self.pisoActual().mostrarVisuales()
               } else {
