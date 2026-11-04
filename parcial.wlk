@@ -22,6 +22,8 @@ class Parcial {
     // Reinicia el parcial para que pueda recogerse nuevamente.
     method reiniciar() {
         agarrado = false
-        game.addVisual(self)
+        if (not game.hasVisual(self)) {
+            game.addVisual(self)
+        }
     }
 }

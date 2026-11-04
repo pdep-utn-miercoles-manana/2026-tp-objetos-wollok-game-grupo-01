@@ -32,7 +32,9 @@ class Llave inherits Obstaculos {
         super()
         recogida = false
         utilizada = false
-        game.addVisual(self)
+        if (not game.hasVisual(self)) {
+            game.addVisual(self)
+        }
     }
 }
 
