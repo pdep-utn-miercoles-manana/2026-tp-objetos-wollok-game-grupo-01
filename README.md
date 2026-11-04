@@ -94,7 +94,8 @@ entrada y no pide parciales. Si el jugador se queda sin vidas, el piso se reinic
 ## Audio
 
 La música arranca cuando el jugador hace el primer **ENTER o clic** en la intro, así el
-navegador permite reproducirla. Queda en loop durante la partida, a volumen bajo.
+navegador permite reproducirla. Queda en loop durante la partida, a volumen bajo. Los archivos
+están en `assets/` para que el cliente los precargue junto con las imágenes.
 
 Efectos de sonido:
 
@@ -205,7 +206,7 @@ todos responden `reiniciar()`.
 | `bancoFijo.wlk`, `bancoMovil.wlk`, `escaleras.wlk` | Obstáculos y progresión. |
 | `indicadorVidas.wlk` | HUD de vidas. |
 | `sonidos.wlk` | Música de fondo, efectos, mute y guardas para tests. |
-| `sounds/` | Archivos `.wav` de música y efectos. |
+| `assets/*.wav` | Archivos de música y efectos. |
 | `*.wtest` | Tests de lógica, integración y gameplay. |
 
 ---
