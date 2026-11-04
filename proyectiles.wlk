@@ -90,14 +90,16 @@ class Proyectiles {
   const reciclables = []
 
   method agregar(proyectilNuevo) {
-    if (reciclables.isEmpty()) {
-      vivos.add(proyectilNuevo)
-      game.addVisual(proyectilNuevo)
-    } else {
-      const reciclado = reciclables.first()
-      reciclables.remove(reciclado)
-      reciclado.copiarDe(proyectilNuevo)
-      vivos.add(reciclado)
+    if (vivos.size() < 30) {
+      if (reciclables.isEmpty()) {
+        vivos.add(proyectilNuevo)
+        game.addVisual(proyectilNuevo)
+      } else {
+        const reciclado = reciclables.first()
+        reciclables.remove(reciclado)
+        reciclado.copiarDe(proyectilNuevo)
+        vivos.add(reciclado)
+      }
     }
   }
 

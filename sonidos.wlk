@@ -10,6 +10,7 @@ object sonidos {
   var musicaIniciada = false
   var silenciado = false
   const efectos = new Dictionary()
+  var ultimoDisparo = -1000
 
   method iniciarMusica() {
     if (game.running()) {
@@ -38,6 +39,18 @@ object sonidos {
     silenciado = not silenciado
     if (musicaIniciada) {
       musica.volume(if (silenciado) 0 else volumenMusica)
+    }
+  }
+
+  // Los disparos pueden ser muchos por segundo; limito el sonido para no saturar
+  // el audio (y el render) cuando hay varios profesores disparando.
+  method efectoDisparo() {
+    if (game.running() and not silenciado) {
+      const ahora = game.currentTime()
+      if (ahora - ultimoDisparo >= 250) {
+        ultimoDisparo = ahora
+        self.efecto("disparo.wav")
+      }
     }
   }
 

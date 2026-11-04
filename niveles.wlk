@@ -170,6 +170,7 @@ object niveles {
     }   
     method configurarTercerPiso() {
      const piso = self.tercerPiso()
+     piso.precargarProyectiles(20)
      const pendriveTercerPiso = new Pendrive(position = game.at(3, 9))
      pendriveTercerPiso.initialize()
      piso.agregarPendrive(pendriveTercerPiso)

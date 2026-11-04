@@ -329,7 +329,7 @@ class LanzarProyectil {
       position = profesor.position(),
       direccion = self.direccionDelTiro(profesor, alumno),
       tipo = tipo))
-    sonidos.efecto("disparo.wav")
+    sonidos.efectoDisparo()
   }
 
   method direccionDelTiro(profesor, alumno) {
