@@ -53,6 +53,13 @@ object niveles {
     const escritorioSegundo8 = new Escritorio(position = game.at(8, 8))
 
 
+    // 6 escritorios comunes del tercer piso
+    const escritorioTercero2 = new Escritorio(position = game.at(7, 1))
+    const escritorioTercero3 = new Escritorio(position = game.at(10, 2))
+    const escritorioTercero4 = new Escritorio(position = game.at(13, 2))
+    const escritorioTercero5 = new Escritorio(position = game.at(17, 4))
+    const escritorioTercero6 = new Escritorio(position = game.at(17, 7))
+    const escritorioTercero7 = new Escritorio(position = game.at(5, 5))
 
 
     method agregarParedesDelFondo(unPiso) {
@@ -89,9 +96,6 @@ object niveles {
           piso.vincularParcialConEscritorio(parcialPrimerPiso, escritorioPrimerPiso)
           const banco = new BancosMoviles(position = game.at(7, 5))
           
-           const cafePrimerPiso = new Cafe(position = game.at(4, 8))
-           piso.agregarCafe(cafePrimerPiso)
-
         
           const panfletoPrimerPiso = new Panfleto(position = game.at(2, 8))
           piso.agregarPanfleto(panfletoPrimerPiso)
@@ -186,6 +190,12 @@ object niveles {
         piso.agregarObstaculo(banco3)
         piso.agregarLlave(llaveTercerPiso)
         piso.agregarEscritorio(escritorioTercerPiso)
+        piso.agregarEscritorio(escritorioTercero2)
+        piso.agregarEscritorio(escritorioTercero3)
+        piso.agregarEscritorio(escritorioTercero4)
+        piso.agregarEscritorio(escritorioTercero5)
+        piso.agregarEscritorio(escritorioTercero6)
+        piso.agregarEscritorio(escritorioTercero7)
         const parcialTercerPiso = new Parcial(position = game.at(16, 9))
         piso.agregarParcial(parcialTercerPiso)
         piso.vincularParcialConEscritorio(parcialTercerPiso, escritorioTercerPiso)
