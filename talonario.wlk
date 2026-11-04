@@ -5,7 +5,7 @@ import obstaculos.*
 class Talonario inherits Obstaculos {
     var paginaActual = 0
 
-    method image() = "escritorios.png"
+    method image() = "cartelInformativo.png"
 
    method interactuar() {
     if (game.running() and not game.hasVisual(pantallaGuia)) {

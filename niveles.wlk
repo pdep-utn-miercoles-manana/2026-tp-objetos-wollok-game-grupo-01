@@ -15,11 +15,11 @@ import pendrive.*
 import talonario.*
 
 object niveles {
-    const plantaBaja = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(2, 5), fondo = "fondoPlantaBaja.png")
-    const pisoLettuceYOmar = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(5,2))
+    const plantaBaja = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(2, 5), fondo = "fodoPlantaBaja.png")
+    const pisoLettuceYOmar = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(5,7))
     const pisoGallo = new Piso(ancho = 20,largo = 12,posicionDeEntrada = game.at(7, 4))
-    const pisoFilipoYFermin = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(2, 2))
-    const llaveTercerPiso = new Llave(position = game.at(4, 4))
+    const pisoFilipoYFermin = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(5, 7))
+    const llaveTercerPiso = new Llave(position = game.at(4, 5))
     const escritorioTercerPiso = new Escritorio(position = game.at(16, 9))
     const llaveSegundoParcial = new Llave(position = game.at(11, 4))
     const escritorioSegundoParcial = new Escritorio(position = game.at(12, 8))
@@ -27,7 +27,7 @@ object niveles {
     const escritorioSegundoPiso = new Escritorio(position = game.at(9, 6),llave = llaveSegundoPiso)
 
     const llavePrimerPiso = new Llave(position = game.at(5, 5))
-    const escaleraPrimerPiso = new Escalera(position = game.at(17, 9))
+    const escaleraPrimerPiso = new Escalera(position = game.at(18, 9))
 
 // Escritorio que contiene la llave
     const escritorioPrimerPiso = new Escritorio(position = game.at(18, 5)
@@ -53,6 +53,13 @@ object niveles {
     const escritorioSegundo8 = new Escritorio(position = game.at(8, 8))
 
 
+    // 6 escritorios comunes del tercer piso
+    const escritorioTercero2 = new Escritorio(position = game.at(7, 1))
+    const escritorioTercero3 = new Escritorio(position = game.at(10, 2))
+    const escritorioTercero4 = new Escritorio(position = game.at(13, 2))
+    const escritorioTercero5 = new Escritorio(position = game.at(17, 4))
+    const escritorioTercero6 = new Escritorio(position = game.at(17, 7))
+    const escritorioTercero7 = new Escritorio(position = game.at(5, 5))
 
 
     method agregarParedesDelFondo(unPiso) {
@@ -67,10 +74,10 @@ object niveles {
     method configurarPlantaBaja() {
         const piso = self.pisoPlantaBaja()
 
-        const escaleraPlantaBaja = new Escalera(position = game.at(17, 9))
+        const escaleraPlantaBaja = new Escalera(position = game.at(18, 9))
 
         piso.agregarEscalera(escaleraPlantaBaja)
-        const talonario = new Talonario(position = game.at(5, 4))
+        const talonario = new Talonario(position = game.at(5, 5))
 
         talonario.initialize()
         piso.agregarTalonario(talonario)
@@ -89,9 +96,6 @@ object niveles {
           piso.vincularParcialConEscritorio(parcialPrimerPiso, escritorioPrimerPiso)
           const banco = new BancosMoviles(position = game.at(7, 5))
           
-           const cafePrimerPiso = new Cafe(position = game.at(4, 8))
-           piso.agregarCafe(cafePrimerPiso)
-
         
           const panfletoPrimerPiso = new Panfleto(position = game.at(2, 8))
           piso.agregarPanfleto(panfletoPrimerPiso)
@@ -149,7 +153,7 @@ object niveles {
         const parcialSegundoPiso = new Parcial(position = game.at(6, 6))
         piso.agregarParcial(parcialSegundoPiso)
         piso.vincularParcialConEscritorio(parcialSegundoPiso, escritorioSegundoPiso)
-        const escaleraSegundoPiso = new Escalera(position = game.at(17, 9))
+        const escaleraSegundoPiso = new Escalera(position = game.at(18, 9))
         piso.agregarEscalera(escaleraSegundoPiso)
 
         
@@ -186,6 +190,12 @@ object niveles {
         piso.agregarObstaculo(banco3)
         piso.agregarLlave(llaveTercerPiso)
         piso.agregarEscritorio(escritorioTercerPiso)
+        piso.agregarEscritorio(escritorioTercero2)
+        piso.agregarEscritorio(escritorioTercero3)
+        piso.agregarEscritorio(escritorioTercero4)
+        piso.agregarEscritorio(escritorioTercero5)
+        piso.agregarEscritorio(escritorioTercero6)
+        piso.agregarEscritorio(escritorioTercero7)
         const parcialTercerPiso = new Parcial(position = game.at(16, 9))
         piso.agregarParcial(parcialTercerPiso)
         piso.vincularParcialConEscritorio(parcialTercerPiso, escritorioTercerPiso)
@@ -212,7 +222,7 @@ object niveles {
         const parcialPendrive = new Parcial(position = game.at(8, 9))
         piso.agregarParcial(parcialPendrive)
         piso.vincularParcialConComputadora(parcialPendrive)
-        const escaleraFinal = new Escalera(position = game.at(18, 10))
+        const escaleraFinal = new Escalera(position = game.at(18, 9))
         piso.agregarEscalera(escaleraFinal)
 
     }

@@ -3,12 +3,13 @@ import profesores.*
 import wollok.game.*
 
     class EscritorioConComputadora inherits Escritorio {
-
+    
     var descargaIniciada = false
     var descargaTerminada = false
     var ticksRestantes = 0
     var parcialAsociado = null
-
+    
+    override method image() = "escritorioComputadora.png"
     override method interactuar(alumno) {
         if (not descargaIniciada) {
             alumno.usarPendrive(self)
