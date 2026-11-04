@@ -28,13 +28,15 @@ class Profesor {
   const property nombre
   const property imagen = "DrOmar.png"
   const property imagenIzquierda = null
+  const property imagenArriba = null
+  const property imagenAbajo = null
   const reaccion
   const comportamientos = []
   var congelado = false
   var ticksCongelado = 0            // si es 0 y congelado, es un congelamiento sin duración
   var senuelo = null                // la celda del celular que lo atrajo
   var siguiendoSenuelo = false      // uso esta bandera porque comparar Position con null explota
-  var mirandoDerecha = true
+  var direccion = "Derecha"
 
   // Los comportamientos los agrego desde afuera (ver la fábrica del final).
   method agregarComportamiento(comportamiento) {
@@ -90,15 +92,27 @@ class Profesor {
   method estaCongelado() = congelado
   method ticksDeCongelamiento() = ticksCongelado
 
-  method image() = if (mirandoDerecha or imagenIzquierda == null) imagen else imagenIzquierda
+  method image() {
+    if (direccion == "Izquierda" and imagenIzquierda != null) {
+      return imagenIzquierda
+    }
+    if (direccion == "Arriba" and imagenArriba != null) {
+      return imagenArriba
+    }
+    if (direccion == "Abajo" and imagenAbajo != null) {
+      return imagenAbajo
+    }
+    return imagen
+  }
 
   // Mueve al profesor y actualiza hacia dónde mira para usar el sprite correcto.
   method moverA(nuevaPosicion) {
-    if (nuevaPosicion.x() < position.x()) {
-      mirandoDerecha = false
-    }
-    if (nuevaPosicion.x() > position.x()) {
-      mirandoDerecha = true
+    const dx = nuevaPosicion.x() - position.x()
+    const dy = nuevaPosicion.y() - position.y()
+    if (dx.abs() >= dy.abs() and dx != 0) {
+      direccion = if (dx > 0) "Derecha" else "Izquierda"
+    } else if (dy != 0) {
+      direccion = if (dy > 0) "Arriba" else "Abajo"
     }
     position = nuevaPosicion
   }
@@ -110,7 +124,7 @@ class Profesor {
     ticksCongelado = 0
     senuelo = null
     siguiendoSenuelo = false
-    mirandoDerecha = true
+    direccion = "Derecha"
     comportamientos.forEach({ c => c.reiniciar() })
   }
 
@@ -423,7 +437,22 @@ object profesores {
   }
 
   method gallito(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito, imagen = "galloDerecha.png", imagenIzquierda = "galloIzquierda.png")
+    return self.gallitoCon(posicion, "gallitoBlanco", "Gallito")
+  }
+
+  method gallitoMarron(posicion) {
+    return self.gallitoCon(posicion, "gallitoMarron", "Gallito marrón")
+  }
+
+  method gallitoCon(posicion, prefijo, nombre) {
+    const profesor = new Profesor(
+      position = posicion,
+      nombre = nombre,
+      reaccion = reaccionGallito,
+      imagen = prefijo + "Derecha.png",
+      imagenIzquierda = prefijo + "Izquierda.png",
+      imagenArriba = prefijo + "Arriba.png",
+      imagenAbajo = prefijo + "Abajo.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 8, comportamiento = new LanzarProyectil(tipo = huevo)))
     return self.agregarAlJuego(profesor)

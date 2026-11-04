@@ -132,7 +132,7 @@ object niveles {
 
         piso.agregarProfesor(profesores.gallo(game.at(15, 8)))
         piso.agregarProfesor(profesores.gallito(game.at(7, 5)))
-        piso.agregarProfesor(profesores.gallito(game.at(12, 5)))
+        piso.agregarProfesor(profesores.gallitoMarron(game.at(12, 5)))
 
         const banco1 = new BancosMoviles(position = game.at(8, 3))
         const banco2 = new BancosMoviles(position = game.at(9, 7))
