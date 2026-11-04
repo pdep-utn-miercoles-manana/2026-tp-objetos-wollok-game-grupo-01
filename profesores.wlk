@@ -313,9 +313,16 @@ class LanzarProyectil {
   method actuar(profesor, alumno, piso) {
     piso.agregarProyectil(new Proyectil(
       position = profesor.position(),
-      direccion = self.direccionAlAzar(),
+      direccion = self.direccionDelTiro(profesor, alumno),
       tipo = tipo))
     sonidos.efecto("disparo.wav")
+  }
+
+  method direccionDelTiro(profesor, alumno) {
+    if (azar.entre(0, 2) == 0) {
+      return self.direccionAlAzar()
+    }
+    return trayectorias.hacia(profesor.position(), alumno.position())
   }
 
   method direccionAlAzar() {

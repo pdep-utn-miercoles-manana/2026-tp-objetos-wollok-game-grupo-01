@@ -87,8 +87,8 @@ object niveles {
         const piso = self.primerPiso()
           piso.precargarProyectiles(20)
           self.agregarParedesDelFondo(piso)
-          //piso.agregarProfesor(profesores.omar(game.at(7, 2)))
-          //piso.agregarProfesor(profesores.lettuce(game.at(11, 3)))
+          piso.agregarProfesor(profesores.omar(game.at(7, 2)))
+          piso.agregarProfesor(profesores.lettuce(game.at(11, 3)))
           piso.agregarLlave(llavePrimerPiso)
           piso.agregarEscritorio(escritorioPrimerPiso)
           const parcialPrimerPiso = new Parcial(position = game.at(6, 7))
@@ -125,9 +125,9 @@ object niveles {
         llaveSegundoPiso.initialize()
         escritorioSegundoPiso.initialize()
 
-        // piso.agregarProfesor(profesores.gallo(game.at(15, 8)))
-        // piso.agregarProfesor(profesores.gallito(game.at(7, 5)))
-        // piso.agregarProfesor(profesores.gallito(game.at(12, 5)))
+        piso.agregarProfesor(profesores.gallo(game.at(15, 8)))
+        piso.agregarProfesor(profesores.gallito(game.at(7, 5)))
+        piso.agregarProfesor(profesores.gallito(game.at(12, 5)))
 
         const banco1 = new BancosMoviles(position = game.at(8, 3))
         const banco2 = new BancosMoviles(position = game.at(9, 7))

@@ -100,6 +100,8 @@ describe "Tests de Piso" {
         method actuar(unAlumno, unPiso) {
             vecesQueActuo += 1
         }
+
+        method atrapa(unAlumno) = false
     }
     const alumno = object {
         var property position = game.at(5, 5)

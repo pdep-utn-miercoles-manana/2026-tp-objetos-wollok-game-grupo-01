@@ -227,7 +227,7 @@ Para verificar el código:
 wollok lint
 ```
 
-Estado actual: **81 tests pasan**, **lint limpio** y **audio integrado**.
+Estado actual: **82 tests pasan**, **lint limpio** y **audio integrado**.
 
 ---
 

@@ -1,5 +1,6 @@
 import wollok.game.*
 import piso.*
+import profesores.*
 import llave.*
 import escritorio.*
 import parcial.*
@@ -27,6 +28,20 @@ describe "Gameplay de objetos" {
 
     assert.that(parcial.seAgarro())
     assert.that(piso.tieneTodosLosParcialesAgarrados())
+  }
+
+  test "el profesor hace daño cuando comparte la celda con el alumno" {
+    const piso = new Piso(ancho = 10, largo = 10)
+    const alumno = new AlumnoDePrueba(position = game.at(2, 2))
+    const profesor = new Profesor(
+      position = game.at(2, 2),
+      nombre = "Omar",
+      reaccion = reaccionOmar)
+
+    piso.agregarProfesor(profesor)
+    piso.actualizar(alumno)
+
+    assert.equals(2, alumno.vida())
   }
 
   test "al presionar E sobre la escalera con los parciales agarrados cambia de piso" {

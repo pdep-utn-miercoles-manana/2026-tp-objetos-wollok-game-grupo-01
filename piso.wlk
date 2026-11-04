@@ -97,11 +97,18 @@ class Piso{
 
     method actualizar(unAlumno) {
         self.actuarProfesores(unAlumno)
+        self.dañarSiAtrapa(unAlumno)
         self.avanzarProyectiles(unAlumno)
 
         if (escritorioConComputadora != null) {
         escritorioConComputadora.actualizar()
         }
+    }
+
+    method dañarSiAtrapa(unAlumno) {
+        profesores
+            .filter({ profesor => profesor.atrapa(unAlumno) })
+            .forEach({ profesor => unAlumno.recibirGolpe(1) })
     }
 
 
