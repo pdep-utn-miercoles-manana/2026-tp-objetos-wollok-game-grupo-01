@@ -10,7 +10,23 @@ object sonidos {
   var musicaIniciada = false
   var silenciado = false
   const efectos = new Dictionary()
+  const archivosDeEfectos = ["disparo.wav", "golpe.wav", "escalera.wav", "llave.wav", "flip.wav", "chiflido.wav", "gameover.wav", "ganar.wav"]
   var ultimoDisparo = -1000
+
+  method precargar() {
+    if (game.running()) {
+      if (musica == null) {
+        musica = game.sound("musica.wav")
+      }
+      archivosDeEfectos.forEach({ archivo => self.cargar(archivo) })
+    }
+  }
+
+  method cargar(archivo) {
+    if (not efectos.containsKey(archivo)) {
+      efectos.put(archivo, game.sound(archivo))
+    }
+  }
 
   method iniciarMusica() {
     if (game.running()) {
@@ -56,9 +72,7 @@ object sonidos {
 
   method efecto(archivo) {
     if (game.running() and not silenciado) {
-      if (not efectos.containsKey(archivo)) {
-        efectos.put(archivo, game.sound(archivo))
-      }
+      self.cargar(archivo)
       const sonido = efectos.get(archivo)
       if (sonido.played()) {
         sonido.stop()

@@ -13,6 +13,7 @@ class Piso{
     var property posicionDeEntrada = game.at(7, 4)
     var property fondo = "fondoPiso.png"
     const obstaculos = []
+    const celdasOcupadas = #{}
     const profesores = [] // no se puede poner como #{} ya que los gallitos son profesores y ellos son todos iguales
     const proyectiles = new Proyectiles()
     const parciales = []
@@ -36,8 +37,8 @@ class Piso{
     }
 
     method actuarBancosMoviles() {
-        bancosMoviles.
-            forEach({ banco => banco.actuar() })
+        bancosMoviles.forEach({ banco => banco.actuar() })
+        self.actualizarCeldasOcupadas()
     }
     method estaDentroDelMapa(posicion){
                 return self.requeridoDeAncho(posicion) &&  self.requeridoDeLargo(posicion)
@@ -53,12 +54,20 @@ class Piso{
          return self.estaDentroDelMapa(unaPosicion) && !(self.hayObstaculoEn(unaPosicion))
     }
     method hayObstaculoEn(unaPosicion){
-        return obstaculos
-                .any({obstaculo => obstaculo.position() == unaPosicion})
+        return celdasOcupadas.contains(self.clave(unaPosicion))
     }
+
+    method clave(posicion) = posicion.x() * 1000 + posicion.y()
+
+    method actualizarCeldasOcupadas() {
+        celdasOcupadas.clear()
+        obstaculos.forEach({ obstaculo => celdasOcupadas.add(self.clave(obstaculo.position())) })
+    }
+
             // Agregar obstáculos y mostrarlos en el tablero
     method agregarObstaculo(unObstaculo) {
             obstaculos.add(unObstaculo)
+            celdasOcupadas.add(self.clave(unObstaculo.position()))
             game.addVisual(unObstaculo)
     }
     method agregarTalonario(unTalonario) {
@@ -74,7 +83,10 @@ class Piso{
 
         // Pared invisible para las celdas que el fondo muestra fuera del aula.
     method agregarPared(unaPosicion) {
-        obstaculos.add(new Pared(position = unaPosicion))
+        const pared = new Pared(position = unaPosicion)
+        pared.initialize()
+        obstaculos.add(pared)
+        celdasOcupadas.add(self.clave(unaPosicion))
     }
 
     method agregarProfesor(unPorfesor) = profesores.add(unPorfesor)
@@ -145,6 +157,7 @@ class Piso{
         // MARIA : aca te dejo el mensaje que tiene que entender obstaculos
     method reiniciarObstaculos(){
         obstaculos.forEach({obstaculo => obstaculo.reiniciar()})
+        self.actualizarCeldasOcupadas()
     }
 
         // Sobre escaleras
@@ -220,9 +233,11 @@ class Piso{
     }
 
     method ocultarVisuales() {
-    [profesores, obstaculos, llaves, escaleras, cafes, panfletos, parciales, pendrives, proyectiles.visuales()]
+    [profesores, self.obstaculosVisibles(), llaves, escaleras, cafes, panfletos, parciales, pendrives, proyectiles.visuales()]
         .forEach({ coleccion => coleccion.forEach({ elemento => self.ocultarVisualSiEsta(elemento)})})
     }
+
+    method obstaculosVisibles() = obstaculos.filter({ obstaculo => not obstaculo.esPared() })
     method mostrarVisuales() {
     [profesores, escaleras, cafes, panfletos, proyectiles.visuales()]
         .forEach({ coleccion => coleccion.forEach({ elemento => self.mostrarVisualSiFalta(elemento)})})

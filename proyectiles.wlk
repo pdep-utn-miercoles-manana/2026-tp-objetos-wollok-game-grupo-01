@@ -105,7 +105,7 @@ class Proyectiles {
 
   method cantidad() = vivos.size()
 
-  method visuales() = vivos
+  method visuales() = vivos + reciclables
 
   // Deja unos proyectiles ya dibujados afuera del tablero para que el primer
   // disparo no tenga que crear el visual en medio del juego.

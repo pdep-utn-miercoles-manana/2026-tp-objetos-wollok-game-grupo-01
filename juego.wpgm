@@ -3,6 +3,7 @@ import wollok.game.*
 import november.*
 import jugador.*
 import pantallaInicio.*
+import sonidos.*
 
 program programaPrincipal {
     game.title("November is Coming - UTN FRBA")
@@ -26,6 +27,8 @@ const ayudaInicio = new TextoInicio(
     colorActual = "FFD166FF")
 
 game.addVisual(ayudaInicio)
+
+game.schedule(300, { sonidos.precargar() })
 
 var partidaIniciada = false
 

@@ -87,7 +87,7 @@ object niveles {
 
     method configurarPrimerPiso() {
         const piso = self.primerPiso()
-          piso.precargarProyectiles(20)
+          piso.precargarProyectiles(10)
           self.agregarParedesDelFondo(piso)
           piso.agregarProfesor(profesores.omar(game.at(7, 2)))
           piso.agregarProfesor(profesores.lettuce(game.at(11, 3)))
@@ -125,7 +125,7 @@ object niveles {
     }
     method configurarSegundoPiso() {
         const piso = self.segundoPiso()
-        piso.precargarProyectiles(20)
+        piso.precargarProyectiles(10)
         self.agregarParedesDelFondo(piso)
         llaveSegundoPiso.initialize()
         escritorioSegundoPiso.initialize()
@@ -170,7 +170,7 @@ object niveles {
     }   
     method configurarTercerPiso() {
      const piso = self.tercerPiso()
-     piso.precargarProyectiles(20)
+     piso.precargarProyectiles(10)
      const pendriveTercerPiso = new Pendrive(position = game.at(3, 9))
      pendriveTercerPiso.initialize()
      piso.agregarPendrive(pendriveTercerPiso)
