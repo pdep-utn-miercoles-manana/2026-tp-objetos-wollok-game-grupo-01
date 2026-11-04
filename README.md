@@ -85,6 +85,7 @@ La presentación es **sin mostrar código**. La demo sugerida es:
 - **E**: interactuar con escritorios, talonarios y escaleras.
 - **Backspace**: cerrar la guía del talonario.
 - **M**: silenciar o reactivar el audio.
+- **Q**: salir del juego y cortar la música.
 - **CLIC en JUGAR**: arrancar la partida.
 - **ENTER / ESPACIO / clic**: reintentar después del game over.
 
