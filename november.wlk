@@ -142,6 +142,18 @@ object juego{
                 }
             }
         }
+        // La bajada es opcional y no modifica los elementos recogidos.
+        method bajarAPlantaBaja() {
+            if (self.pisoActual() == niveles.primerPiso()) {
+                self.pisoActual().ocultarVisuales()
+                numeroDePisoActual = 0
+                game.boardGround(self.pisoActual().fondo())
+                jugador.entrarAlPiso(self.pisoActual())
+                self.pisoActual().mostrarVisuales()
+                sonidos.efecto("escalera.wav")
+            }
+        }
+
         method condicionOkDePasarEntrePisos() =
             self.haySiguientePiso() &&
             (self.pisoActual() == niveles.pisoPlantaBaja() || self.pisoActual().tieneTodosLosParcialesAgarrados())

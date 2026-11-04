@@ -17,8 +17,8 @@ import sonidos.*
 
 object niveles {
     const plantaBaja = new Piso(ancho = 20, largo = 12, margen = 1, posicionDeEntrada = game.at(2, 5), fondo = "fondoPlantaBaja.png")
-    const pisoLettuceYOmar = new Piso(ancho = 20, largo = 12, margen = 1, posicionDeEntrada = game.at(5,7))
-    const pisoGallo = new Piso(ancho = 20,largo = 12,margen = 1,posicionDeEntrada = game.at(7, 4))
+    const pisoLettuceYOmar = new Piso(ancho = 20, largo = 12, margen = 1, posicionDeEntrada = game.at(5, 7))
+    const pisoGallo = new Piso(ancho = 20, largo = 12, margen = 1, posicionDeEntrada = game.at(5, 7))
     const pisoFilipoYFermin = new Piso(ancho = 20, largo = 12, margen = 1, posicionDeEntrada = game.at(5, 7))
     const llaveTercerPiso = new Llave(position = game.at(4, 5))
     const escritorioTercerPiso = new Escritorio(position = game.at(16, 9))
@@ -109,6 +109,7 @@ object niveles {
           piso.agregarBancoMovil(banco)         
           escritorioPrimerPiso.asignarLlave(llavePrimerPiso)
           piso.agregarEscalera(escaleraPrimerPiso)
+          piso.agregarEscalera(new EscaleraDeBajada(position = game.at(2, 9)))
           piso.agregarEscritorio(escritorio2)
           piso.agregarEscritorio(escritorio3)
           piso.agregarEscritorio(escritorio4)

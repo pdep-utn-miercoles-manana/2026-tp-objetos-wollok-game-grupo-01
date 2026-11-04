@@ -163,7 +163,9 @@ class Piso{
         // Sobre escaleras
     method agregarEscalera(unaEscalera) {
         escaleras.add(unaEscalera)
+        if (unaEscalera.esVisible()) {
         game.addVisual(unaEscalera)
+        }
     }
 
     method interactuarEscaleraEn(alumno, unJuego) {
@@ -233,14 +235,16 @@ class Piso{
     }
 
     method ocultarVisuales() {
-    [profesores, self.obstaculosVisibles(), llaves, escaleras, cafes, panfletos, parciales, pendrives, proyectiles.visuales()]
+    [profesores, self.obstaculosVisibles(), llaves, self.escalerasVisibles(), cafes, panfletos, parciales, pendrives, proyectiles.visuales()]
         .forEach({ coleccion => coleccion.forEach({ elemento => self.ocultarVisualSiEsta(elemento)})})
     }
 
     method obstaculosVisibles() = obstaculos.filter({ obstaculo => not obstaculo.esPared() })
-    method mostrarVisuales() {
-    [profesores, escaleras, cafes, panfletos, proyectiles.visuales()]
-        .forEach({ coleccion => coleccion.forEach({ elemento => self.mostrarVisualSiFalta(elemento)})})
+    method escalerasVisibles() = escaleras.filter({ escalera => escalera.esVisible() })
+
+   method mostrarVisuales() {
+    [profesores, self.escalerasVisibles(), cafes, panfletos, proyectiles.visuales()]
+    .forEach({ coleccion => coleccion.forEach({ elemento => self.mostrarVisualSiFalta(elemento)})})
 
     obstaculos
         .filter({ obstaculo => not obstaculo.esPared() })
@@ -253,7 +257,7 @@ class Piso{
     pendrives
         .filter({ pendrive => not pendrive.fueRecogido() })
         .forEach({ pendrive => self.mostrarVisualSiFalta(pendrive)})
-    }  
+    }
     
     
     method interactuarEscritoriosCercanos(alumno) {
@@ -282,9 +286,7 @@ class Piso{
                     efecto.get(1).apply(alumno)
                 })
 
-            if (game.running()) {
-                game.say(escritorio, "¡Parcial conseguido!")
-            }
+            game.say(escritorio, "¡Parcial conseguido!")
         })
     }
 
