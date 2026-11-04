@@ -240,4 +240,14 @@ Estado actual: **82 tests pasan**, **lint limpio** y **audio integrado**.
 
 ---
 
+## Para la presentación
+
+Hacé doble clic en **`jugar.bat`**. El script:
+
+- Levanta el servidor de Wollok.
+- Abre Chrome o Edge en **pantalla completa**, sin barras ni pestañas.
+- Cuando cerrás la ventana del juego con **Alt+F4**, apaga el servidor.
+
+Necesitás tener instalado `wollok-ts-cli` y Chrome o Edge.
+
 
