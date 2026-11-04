@@ -10,6 +10,7 @@ class Piso{
     const ancho 
     const largo 
     var property posicionDeEntrada = game.at(7, 4)
+    var property fondo = "fondoPiso.png"
     const obstaculos = []
     const profesores = [] // no se puede poner como #{} ya que los gallitos son profesores y ellos son todos iguales
     const proyectiles = new Proyectiles()

@@ -2,7 +2,7 @@ import escritorio.*
 import profesores.*
 import wollok.game.*
 
-class EscritorioConComputadora inherits Escritorio {
+    class EscritorioConComputadora inherits Escritorio {
 
     var descargaIniciada = false
     var descargaTerminada = false

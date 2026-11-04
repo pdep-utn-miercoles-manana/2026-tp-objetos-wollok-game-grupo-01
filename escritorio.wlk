@@ -11,7 +11,7 @@ class Escritorio inherits Obstaculos {
     } else if (estaAbierto) {
         return "escritorioAbiertocontapa.png"
     } else {
-        return "escritorioConTapaCerrada.png"
+        return "escritorioTapaCerrada.png"
     }
 }
 

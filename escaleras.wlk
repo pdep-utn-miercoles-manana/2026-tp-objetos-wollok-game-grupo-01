@@ -3,7 +3,7 @@ import obstaculos.Obstaculos
 
 class Escalera inherits Obstaculos {
 
-    method image() = "escalera.png"
+    method image() = "escaleras.png"
 
     method interactuar(alumno, unJuego) {
         if (self.estaEnLaPosicionDel(alumno)) {

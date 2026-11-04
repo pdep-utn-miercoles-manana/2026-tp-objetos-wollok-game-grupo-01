@@ -386,7 +386,7 @@ object profesores {
   }
 
   method lettuce(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Ing. Lettuce", reaccion = reaccionLettuce, imagen = "lettucce.png")
+    const profesor = new Profesor(position = posicion, nombre = "Ing. Lettuce", reaccion = reaccionLettuce, imagen = "lettuce.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 6, comportamiento = new LanzarProyectil(tipo = borrador)))
     return self.agregarAlJuego(profesor)
@@ -400,7 +400,7 @@ object profesores {
   }
 
   method gallito(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito, imagen = "galo.png")
+    const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito, imagen = "gallo.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 8, comportamiento = new LanzarProyectil(tipo = huevo)))
     return self.agregarAlJuego(profesor)
