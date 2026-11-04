@@ -77,14 +77,16 @@ object pantallaInicio {
 
   method enMenu() = fase == 3
 
-  method terminar() {
-    activa = false
-    game.removeTickEvent("animacionInicio")
-    visuales.forEach({ visual =>
-      if (game.hasVisual(visual)) {
-        game.removeVisual(visual)
-      }
-    })
+    method terminar() {
+    if (activa) {
+      activa = false
+      game.removeTickEvent("animacionInicio")
+      visuales.forEach({ visual =>
+        if (game.hasVisual(visual)) {
+          game.removeVisual(visual)
+        }
+      })
+    }
   }
 
   method actualizarFase() {

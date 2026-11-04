@@ -7,6 +7,7 @@ import pantallaInicio.*
 import indicadorVidas.*
 import sonidos.*
 import pantallaGameOver.*
+import pantallaVictoria.*
 object juego{
 
     const pisos = []
@@ -23,15 +24,17 @@ object juego{
         game.onClickDo({ posicion => self.avanzarInicio() })
     }
 
-    method avanzarInicio() {
-        if (enGameOver) {
-            self.reiniciarDespuesDeGameOver()
-        } else {
-            sonidos.iniciarMusica()
-            if (pantallaInicio.enMenu()) {
-                self.empezar()
+        method avanzarInicio() {
+        if (not juegoGanado) {
+            if (enGameOver) {
+                self.reiniciarDespuesDeGameOver()
             } else {
-                pantallaInicio.avanzar()
+                sonidos.iniciarMusica()
+                if (pantallaInicio.enMenu()) {
+                    self.empezar()
+                } else {
+                    pantallaInicio.avanzar()
+                }
             }
         }
     }
@@ -64,10 +67,10 @@ object juego{
             jugador.entrarAlPiso(self.pisoActual())
             game.addVisual(jugador)
             game.addVisual(indicadorVidas)
-            keyboard.up().onPressDo({ if (not enGameOver) jugador.moverArriba() })
-            keyboard.down().onPressDo({ if (not enGameOver) jugador.moverAbajo() })
-            keyboard.left().onPressDo({ if (not enGameOver) jugador.moverIzquierda() })
-            keyboard.right().onPressDo({ if (not enGameOver) jugador.moverDerecha() })
+            keyboard.up().onPressDo({ if (self.jugando()) jugador.moverArriba() })
+            keyboard.down().onPressDo({ if (self.jugando()) jugador.moverAbajo() })
+            keyboard.left().onPressDo({ if (self.jugando()) jugador.moverIzquierda() })
+            keyboard.right().onPressDo({ if (self.jugando()) jugador.moverDerecha() })
             keyboard.m().onPressDo({ sonidos.alternarMute() })
             keyboard.enter().onPressDo({ self.avanzarInicio() })
             keyboard.space().onPressDo({ self.avanzarInicio() })
@@ -92,7 +95,7 @@ object juego{
 
         method iniciarActualizaciones() {
           const tick = game.tick(tiempos.milisegundosPorTick(), {
-            if (not enGameOver) {
+            if (self.jugando()) {
                 self.pisoActual().actualizar(jugador)
                 jugador.actuar()
                 self.verificarDerrota()
@@ -123,28 +126,20 @@ object juego{
                 pantallaGameOver.ocultar()
         }
 
-       method avanzarEntrePiso() {
+              method avanzarEntrePiso() {
             if (self.condicionOkDePasarEntrePisos()) {
                 self.pisoActual().ocultarVisuales()
                 numeroDePisoActual += 1
                 game.boardGround(self.pisoActual().fondo())
                 jugador.entrarAlPiso(self.pisoActual())
                 self.pisoActual().mostrarVisuales()
-              } else {
+            } else {
                 if (not self.haySiguientePiso() &&
                 self.pisoActual().tieneTodosLosParcialesAgarrados() &&
                 not juegoGanado) {
-
-             juegoGanado = true
-             sonidos.detenerMusica()
-             sonidos.efecto("ganar.wav")
-
-                if (game.running()) {
-                    game.say(jugador, "¡Felicitaciones, probablemente no tengas que ir a final!")
-                    game.schedule(3000, { game.stop() })
-                        }
+                    self.mostrarVictoria()
                 }
-            } 
+            }
         }
         method condicionOkDePasarEntrePisos() =
             self.haySiguientePiso() &&
@@ -176,7 +171,19 @@ object juego{
             self.reiniciarPisoActual()
             sonidos.iniciarMusica()
         }
+            method jugando() = not enGameOver and not juegoGanado
 
+            method mostrarVictoria() {
+            juegoGanado = true
+            sonidos.detenerMusica()
+            sonidos.efecto("ganar.wav")
+            pantallaGuia.cerrar()
+            self.pisoActual().limpiarMensajesDeProfesores()
+            self.pisoActual().ocultarVisuales()
+            game.removeVisual(jugador)
+            game.removeVisual(indicadorVidas)
+            pantallaVictoria.mostrar()
+        }
     
 
 }
