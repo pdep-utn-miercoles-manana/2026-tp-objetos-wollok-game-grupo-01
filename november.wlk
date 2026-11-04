@@ -72,6 +72,10 @@ object juego{
             
         method agregarPiso(unPiso) = pisos.add(unPiso)
         method cantidadDePisos() = pisos.size()
+        method salir() {
+            sonidos.detenerMusica()
+            game.stop()
+        }
         method pisoActual(){
             return pisos.get(numeroDePisoActual)
         }

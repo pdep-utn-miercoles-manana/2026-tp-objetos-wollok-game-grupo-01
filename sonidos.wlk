@@ -9,6 +9,7 @@ object sonidos {
   var musica = null
   var musicaIniciada = false
   var silenciado = false
+  const efectos = new Dictionary()
 
   method iniciarMusica() {
     if (game.running()) {
@@ -41,7 +42,13 @@ object sonidos {
 
   method efecto(archivo) {
     if (game.running() and not silenciado) {
-      const sonido = game.sound(archivo)
+      if (not efectos.containsKey(archivo)) {
+        efectos.put(archivo, game.sound(archivo))
+      }
+      const sonido = efectos.get(archivo)
+      if (sonido.played()) {
+        sonido.stop()
+      }
       sonido.volume(volumenEfecto)
       sonido.play()
     }
