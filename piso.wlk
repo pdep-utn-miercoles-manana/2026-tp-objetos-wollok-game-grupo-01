@@ -101,11 +101,14 @@ class Piso{
         self.actuarProfesores(unAlumno)
         self.dañarSiAtrapa(unAlumno)
         self.avanzarProyectiles(unAlumno)
+        self.descartarProyectilesFueraDelPiso()
 
         if (escritorioConComputadora != null) {
         escritorioConComputadora.actualizar()
         }
     }
+
+    method descartarProyectilesFueraDelPiso() = proyectiles.descartarFueraDe(self)
 
     method dañarSiAtrapa(unAlumno) {
         profesores

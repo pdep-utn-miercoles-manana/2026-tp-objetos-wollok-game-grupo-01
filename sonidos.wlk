@@ -20,6 +20,7 @@ object sonidos {
         musica.shouldLoop(true)
         musica.volume(if (silenciado) 0 else volumenMusica)
         musica.play()
+        musica.shouldLoop(true)
         musicaIniciada = true
       }
     }
