@@ -13,6 +13,8 @@ class Panfleto inherits Obstaculos {
     override method reiniciar() {
         super()
         usado = false
-        game.addVisual(self)
+        if (not game.hasVisual(self)) {
+            game.addVisual(self)
+        }
     }
 }

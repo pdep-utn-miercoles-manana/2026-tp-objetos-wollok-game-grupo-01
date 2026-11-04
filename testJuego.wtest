@@ -126,6 +126,10 @@ test "El juego reinicia cuando el jugador se queda sin vidas" {
 
     juego.verificarDerrota()
 
+    assert.that(juego.estaEnGameOver())
+    assert.equals(0, jugador.vidas())
+
+    juego.reiniciarDespuesDeGameOver()
     assert.equals(3, jugador.vidas())
 }
 test "El jugador aparece en la entrada del siguiente piso" {

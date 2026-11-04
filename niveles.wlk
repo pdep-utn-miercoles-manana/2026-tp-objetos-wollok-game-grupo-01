@@ -13,6 +13,7 @@ import cafe.*
 import panfleto.*
 import pendrive.*
 import talonario.*
+import sonidos.*
 
 object niveles {
     const plantaBaja = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(2, 5), fondo = "fodoPlantaBaja.png")
@@ -73,6 +74,7 @@ object niveles {
 
     method configurarPlantaBaja() {
         const piso = self.pisoPlantaBaja()
+        self.agregarParedesDelFondo(piso)
 
         const escaleraPlantaBaja = new Escalera(position = game.at(18, 9))
 
@@ -117,6 +119,9 @@ object niveles {
           piso.agregarEscritorio(escritorio9)
           piso.agregarEscritorio(escritorio10)
           piso.agregarEscritorio(escritorio11)
+
+          const cafePrimerPiso = new Cafe(position = game.at(16, 7))
+          piso.agregarCafe(cafePrimerPiso)
     }
     method configurarSegundoPiso() {
         const piso = self.segundoPiso()
@@ -206,11 +211,13 @@ object niveles {
         piso.agregarParcial(parcialSegundo)
         piso.vincularParcialConEscritorio(parcialSegundo, escritorioSegundoParcial)
         piso.vincularEfectoConParcial(parcialTercerPiso, { alumno =>alumno.invertirControles()
+             sonidos.efecto("flip.wav")
              if (game.running()) {
               game.say(filipo, "¡Ahí tenés un .flip!")
                }
             })
         piso.vincularEfectoConParcial(parcialSegundo, { alumno =>alumno.congelarPor(2)
+            sonidos.efecto("chiflido.wav")
             if (game.running()) {
                 game.say(fermin, "¡Ahí tenés un chiflido!")
                 }

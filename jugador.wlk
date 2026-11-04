@@ -1,6 +1,7 @@
 import wollok.game.*
 import profesores.*   // para usar tiempos.ticks(segundos)
 import november.*
+import sonidos.*
 
 object movilidadNormal {
     method arriba(j)    { j.irArriba() }
@@ -113,6 +114,7 @@ object jugador {
     // Lo llaman tiza, borrador y huevo. Las vidas no bajan de 0.
     method recibirGolpe(cantidad) {
         vidas = (vidas - cantidad).max(0)
+        sonidos.efecto("golpe.wav")
     }
 
     method vidas() = vidas

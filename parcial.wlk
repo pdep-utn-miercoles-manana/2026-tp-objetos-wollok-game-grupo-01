@@ -1,4 +1,5 @@
 import wollok.game.*
+import sonidos.*
 
 class Parcial {
     var property position
@@ -14,12 +15,15 @@ class Parcial {
         if (!agarrado) {
             agarrado = true
             game.removeVisual(self)
+            sonidos.efecto("parcial.wav")
         }
     }
 
     // Reinicia el parcial para que pueda recogerse nuevamente.
     method reiniciar() {
         agarrado = false
-        game.addVisual(self)
+        if (not game.hasVisual(self)) {
+            game.addVisual(self)
+        }
     }
 }

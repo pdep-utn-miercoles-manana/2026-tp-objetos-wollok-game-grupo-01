@@ -1,5 +1,6 @@
 import wollok.game.*
 import obstaculos.Obstaculos
+import sonidos.*
 
 class Escritorio inherits Obstaculos {
     var estaAbierto = false
@@ -20,8 +21,9 @@ class Escritorio inherits Obstaculos {
     }
 
     method abrir() {
-        if (llave != null && llave.fueRecogida()) {
+        if (llave != null && llave.fueRecogida() && not estaAbierto) {
             estaAbierto = true
+            sonidos.efecto("escritorio.wav")
         }
     }
 

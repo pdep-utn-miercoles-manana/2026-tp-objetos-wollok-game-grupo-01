@@ -1,5 +1,6 @@
 import wollok.game.*
 import obstaculos.Obstaculos
+import sonidos.*
 
 class Escalera inherits Obstaculos {
 
@@ -7,6 +8,7 @@ class Escalera inherits Obstaculos {
 
     method interactuar(alumno, unJuego) {
         if (self.estaEnLaPosicionDel(alumno)) {
+            sonidos.efecto("escalera.wav")
             unJuego.avanzarEntrePiso()
         }
     }

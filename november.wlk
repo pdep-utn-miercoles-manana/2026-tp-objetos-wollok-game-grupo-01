@@ -5,31 +5,41 @@ import profesores.*
 import talonario.*
 import pantallaInicio.*
 import indicadorVidas.*
+import sonidos.*
+import pantallaGameOver.*
 object juego{
 
     const pisos = []
     var numeroDePisoActual = 0
     var juegoGanado = false
     var empezado = false
+    var enGameOver = false
 
     method mostrarPantallaInicio() {
         pantallaInicio.mostrar()
         keyboard.enter().onPressDo({ self.avanzarInicio() })
         keyboard.space().onPressDo({ self.avanzarInicio() })
+        keyboard.m().onPressDo({ sonidos.alternarMute() })
         game.onClickDo({ posicion => self.avanzarInicio() })
     }
 
     method avanzarInicio() {
-        if (pantallaInicio.enMenu()) {
-            self.empezar()
+        if (enGameOver) {
+            self.reiniciarDespuesDeGameOver()
         } else {
-            pantallaInicio.avanzar()
+            sonidos.iniciarMusica()
+            if (pantallaInicio.enMenu()) {
+                self.empezar()
+            } else {
+                pantallaInicio.avanzar()
+            }
         }
     }
 
     method empezar() {
         if (not empezado) {
             empezado = true
+            sonidos.iniciarMusica()
             pantallaInicio.terminar()
             self.iniciar()
         }
@@ -54,29 +64,39 @@ object juego{
             jugador.entrarAlPiso(self.pisoActual())
             game.addVisual(jugador)
             game.addVisual(indicadorVidas)
-            keyboard.up().onPressDo({ jugador.moverArriba() })
-            keyboard.down().onPressDo({ jugador.moverAbajo() })
-            keyboard.left().onPressDo({ jugador.moverIzquierda() })
-            keyboard.right().onPressDo({ jugador.moverDerecha() })
+            keyboard.up().onPressDo({ if (not enGameOver) jugador.moverArriba() })
+            keyboard.down().onPressDo({ if (not enGameOver) jugador.moverAbajo() })
+            keyboard.left().onPressDo({ if (not enGameOver) jugador.moverIzquierda() })
+            keyboard.right().onPressDo({ if (not enGameOver) jugador.moverDerecha() })
+            keyboard.m().onPressDo({ sonidos.alternarMute() })
+            keyboard.enter().onPressDo({ self.avanzarInicio() })
+            keyboard.space().onPressDo({ self.avanzarInicio() })
+            game.onClickDo({ posicion => self.avanzarInicio() })
             self.iniciarActualizaciones()
 
 
             //Interaccion al presionar la tecla e, con escaleras, llaves y parciales.
-            keyboard.e().onPressDo({self.pisoActual().interactuarAlPresionarE(jugador, self)})
+            keyboard.e().onPressDo({ if (not enGameOver) self.pisoActual().interactuarAlPresionarE(jugador, self) })
             keyboard.backspace().onPressDo({pantallaGuia.cerrar()})
         }
             
         method agregarPiso(unPiso) = pisos.add(unPiso)
         method cantidadDePisos() = pisos.size()
+        method salir() {
+            sonidos.detenerMusica()
+            game.stop()
+        }
         method pisoActual(){
             return pisos.get(numeroDePisoActual)
         }
 
         method iniciarActualizaciones() {
           const tick = game.tick(tiempos.milisegundosPorTick(), {
-            self.pisoActual().actualizar(jugador)
-            jugador.actuar()
-            self.verificarDerrota()
+            if (not enGameOver) {
+                self.pisoActual().actualizar(jugador)
+                jugador.actuar()
+                self.verificarDerrota()
+            }
             }, false)
 
          tick.start()
@@ -99,6 +119,8 @@ object juego{
         method reiniciarConfiguracion() {
                 pisos.clear()
                 numeroDePisoActual = 0
+                enGameOver = false
+                pantallaGameOver.ocultar()
         }
 
        method avanzarEntrePiso() {
@@ -114,6 +136,8 @@ object juego{
                 not juegoGanado) {
 
              juegoGanado = true
+             sonidos.detenerMusica()
+             sonidos.efecto("ganar.wav")
 
                 if (game.running()) {
                     game.say(jugador, "¡Felicitaciones, probablemente no tengas que ir a final!")
@@ -131,9 +155,26 @@ object juego{
         }
 
         method verificarDerrota() {
-            if (jugador.sinVidas()) {
-            self.reiniciarPisoActual()
+            if (jugador.sinVidas() and not enGameOver) {
+                self.mostrarGameOver()
             }
+        }
+
+        method estaEnGameOver() = enGameOver
+
+        method mostrarGameOver() {
+            enGameOver = true
+            self.pisoActual().limpiarMensajesDeProfesores()
+            sonidos.detenerMusica()
+            sonidos.efecto("gameover.wav")
+            pantallaGameOver.mostrar()
+        }
+
+        method reiniciarDespuesDeGameOver() {
+            pantallaGameOver.ocultar()
+            enGameOver = false
+            self.reiniciarPisoActual()
+            sonidos.iniciarMusica()
         }
 
     
