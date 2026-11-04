@@ -9,6 +9,7 @@ class Piso{
 
     const ancho 
     const largo 
+    const margen = 0
     var property posicionDeEntrada = game.at(7, 4)
     var property fondo = "fondoPiso.png"
     const obstaculos = []
@@ -42,10 +43,10 @@ class Piso{
                 return self.requeridoDeAncho(posicion) &&  self.requeridoDeLargo(posicion)
     }
     method requeridoDeAncho(posicion){
-            return posicion.x() >= 0 && posicion.x() < ancho
+            return posicion.x() >= margen && posicion.x() < ancho - margen
     }
     method requeridoDeLargo(posicion){
-            return posicion.y() >= 0 && posicion.y() < largo
+            return posicion.y() >= margen && posicion.y() < largo - margen
     }
 
     method esTransitable(unaPosicion){
@@ -130,6 +131,13 @@ class Piso{
     method reiniciarProfesores(){
         profesores 
             .forEach({profesor => profesor.reiniciar()})
+        self.limpiarMensajesDeProfesores()
+    }
+
+    method limpiarMensajesDeProfesores() {
+        if (game.running()) {
+            profesores.forEach({profesor => game.say(profesor, "")})
+        }
     }
         // MARIA : aca te dejo el mensaje que tiene que entender obstaculos
     method reiniciarObstaculos(){

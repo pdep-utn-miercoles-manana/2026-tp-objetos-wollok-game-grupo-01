@@ -24,12 +24,13 @@ a la escalera para seguir avanzando.
 
 El juego tiene:
 
-- Una **pantalla de inicio animada** con la trama, los controles y el menú.
+- Una **portada con JUGAR / OPCIONES** y el cartel **“HACÉ CLIC EN JUGAR”**.
 - **Cuatro niveles**: planta baja, primer piso, segundo piso y tercer piso.
 - **Profesores** que se mueven y disparan.
 - **Obstáculos**, bancos fijos y móviles, escritorios, llaves y parciales.
-- **Vidas**, congelamiento y reinicio de piso.
+- **Vidas**, **game over con sonido** y reinicio de piso.
 - **Talonario** en planta baja, **computadora y pendrive** en el tercer piso.
+- **Café** en el primer y segundo piso, y **panfletos**.
 - **HUD de vidas** durante la partida.
 
 ---
@@ -53,10 +54,9 @@ sensación de que el tiempo no alcanza.
 
 La presentación es **sin mostrar código**. La demo sugerida es:
 
-1. **Pantalla de inicio**
-   - Mostrar el título y la animación de los profesores caminando.
-   - Pasar por la trama y los controles con **ENTER** o **clic**.
-   - Llegar al menú y arrancar con **ENTER** o **clic**.
+1. **Portada**
+   - Mostrar el título y el cartel **“HACÉ CLIC EN JUGAR”**.
+   - Hacer clic en **JUGAR** para arrancar.
 
 2. **Planta baja**
    - Mostrar el talonario: al acercarse y apretar **E** aparece la guía.
@@ -66,12 +66,13 @@ La presentación es **sin mostrar código**. La demo sugerida es:
 3. **Primer piso**
    - Moverse con las flechas.
    - Agarrar la llave y acercarse al escritorio: se abre y entrega el parcial.
+   - Tomar el café si hace falta recuperar una vida.
    - Llegar a la escalera y apretar **E** para cambiar de piso.
 
 4. **Si hay tiempo**
    - Mostrar el segundo piso y el tercer piso.
    - Mostrar la computadora/pendrive y los profesores del tercer piso.
-   - Contar que si el jugador se queda sin vidas, se reinicia el piso.
+   - Contar que si el jugador se queda sin vidas aparece el **game over** y se puede reintentar.
 
 > Si la demo en vivo falla, se pueden usar capturas del inicio y de los pisos. Los comandos
 > para levantarlo están en “Cómo correrlo”.
@@ -84,17 +85,19 @@ La presentación es **sin mostrar código**. La demo sugerida es:
 - **E**: interactuar con escritorios, talonarios y escaleras.
 - **Backspace**: cerrar la guía del talonario.
 - **M**: silenciar o reactivar el audio.
-- **ENTER / ESPACIO / clic**: avanzar en la intro y arrancar la partida.
+- **CLIC en JUGAR**: arrancar la partida.
+- **ENTER / ESPACIO / clic**: reintentar después del game over.
 
 Objetivo de cada piso: juntar todos los parciales y llegar a la escalera. La planta baja es la
-entrada y no pide parciales. Si el jugador se queda sin vidas, el piso se reinicia.
+entrada y no pide parciales. Si el jugador se queda sin vidas aparece el **game over**; al
+reintentar se reinicia el piso y se limpian los mensajes de los profesores.
 
 ---
 
 ## Audio
 
-La música arranca cuando el jugador hace el primer **ENTER o clic** en la intro, así el
-navegador permite reproducirla. Queda en loop durante la partida, a volumen bajo. Los archivos
+La música arranca cuando el jugador hace clic en **JUGAR**, así el navegador permite
+reproducirla. Queda en loop hasta que el jugador gana o pierde, a volumen bajo. Los archivos
 están en `assets/` para que el cliente los precargue junto con las imágenes.
 
 Efectos de sonido:
@@ -105,10 +108,14 @@ Efectos de sonido:
 - Subir por la escalera.
 - Disparar.
 - Recibir daño.
+- Efecto **.flip**.
+- Efecto **chiflido**.
+- Game over.
 - Ganar la partida.
 
-La música se detiene al ganar. La tecla **M** silencia o reactiva todo el audio. Los sonidos
-están envueltos en `game.running()` para que los tests no intenten reproducir audio.
+La música se detiene al ganar y al perder, y el game over tiene su propio sonido. La tecla **M**
+silencia o reactiva todo el audio. Los sonidos están envueltos en `game.running()` para que los
+tests no intenten reproducir audio.
 
 ---
 
@@ -192,9 +199,10 @@ todos responden `reiniciar()`.
 
 | Archivo | Responsabilidad |
 |---|---|
-| `juego.wpgm` | Configura el tablero y arranca la pantalla de inicio. |
-| `november.wlk` | Controlador: pisos, avance, reinicio, victoria y pantalla de inicio. |
-| `pantallaInicio.wlk` | Intro animada: título, trama, controles, menú y animaciones. |
+| `juego.wpgm` | Configura el tablero, muestra la portada y arranca el juego. |
+| `november.wlk` | Controlador: pisos, avance, reinicio, game over y victoria. |
+| `pantallaInicio.wlk` | Clases de texto/imagen usadas por la portada y el game over. |
+| `pantallaGameOver.wlk` | Pantalla de game over con sonido y reintento. |
 | `niveles.wlk` | Configuración de los cuatro niveles, ítems, obstáculos y profesores. |
 | `piso.wlk` | Estado del piso, transitabilidad, interacciones y actualización. |
 | `jugador.wlk` | Movimiento, colisiones, vidas, congelamiento y reinicio. |

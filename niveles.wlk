@@ -13,12 +13,13 @@ import cafe.*
 import panfleto.*
 import pendrive.*
 import talonario.*
+import sonidos.*
 
 object niveles {
-    const plantaBaja = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(2, 5), fondo = "fondoPlantaBaja.png")
-    const pisoLettuceYOmar = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(5,2))
-    const pisoGallo = new Piso(ancho = 20,largo = 12,posicionDeEntrada = game.at(7, 4))
-    const pisoFilipoYFermin = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(2, 2))
+    const plantaBaja = new Piso(ancho = 20, largo = 12, margen = 1, posicionDeEntrada = game.at(2, 5), fondo = "fondoPlantaBaja.png")
+    const pisoLettuceYOmar = new Piso(ancho = 20, largo = 12, margen = 1, posicionDeEntrada = game.at(5,2))
+    const pisoGallo = new Piso(ancho = 20,largo = 12,margen = 1,posicionDeEntrada = game.at(7, 4))
+    const pisoFilipoYFermin = new Piso(ancho = 20, largo = 12, margen = 1, posicionDeEntrada = game.at(2, 2))
     const llaveTercerPiso = new Llave(position = game.at(4, 4))
     const escritorioTercerPiso = new Escritorio(position = game.at(16, 9))
     const llaveSegundoParcial = new Llave(position = game.at(11, 4))
@@ -73,11 +74,12 @@ object niveles {
 
     method configurarPlantaBaja() {
         const piso = self.pisoPlantaBaja()
+        self.agregarParedesDelFondo(piso)
 
         const escaleraPlantaBaja = new Escalera(position = game.at(17, 9))
 
         piso.agregarEscalera(escaleraPlantaBaja)
-        const talonario = new Talonario(position = game.at(5, 4))
+        const talonario = new Talonario(position = game.at(6, 4))
 
         talonario.initialize()
         piso.agregarTalonario(talonario)
@@ -117,6 +119,9 @@ object niveles {
           piso.agregarEscritorio(escritorio9)
           piso.agregarEscritorio(escritorio10)
           piso.agregarEscritorio(escritorio11)
+
+          const cafePrimerPiso = new Cafe(position = game.at(16, 7))
+          piso.agregarCafe(cafePrimerPiso)
     }
     method configurarSegundoPiso() {
         const piso = self.segundoPiso()
@@ -206,11 +211,13 @@ object niveles {
         piso.agregarParcial(parcialSegundo)
         piso.vincularParcialConEscritorio(parcialSegundo, escritorioSegundoParcial)
         piso.vincularEfectoConParcial(parcialTercerPiso, { alumno =>alumno.invertirControles()
+             sonidos.efecto("flip.wav")
              if (game.running()) {
               game.say(filipo, "¡Ahí tenés un .flip!")
                }
             })
         piso.vincularEfectoConParcial(parcialSegundo, { alumno =>alumno.congelarPor(2)
+            sonidos.efecto("chiflido.wav")
             if (game.running()) {
                 game.say(fermin, "¡Ahí tenés un chiflido!")
                 }

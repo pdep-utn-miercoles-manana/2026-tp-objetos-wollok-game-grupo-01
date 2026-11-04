@@ -2,6 +2,7 @@
 import wollok.game.*
 import november.*
 import jugador.*
+import pantallaInicio.*
 
 program programaPrincipal {
     game.title("November is Coming - UTN FRBA")
@@ -19,13 +20,21 @@ const portada = object {
 
 game.addVisual(portada)
 
+const ayudaInicio = new TextoInicio(
+    position = game.at(5, 1),
+    contenido = "HACÉ CLIC EN JUGAR",
+    colorActual = "FFD166FF")
+
+game.addVisual(ayudaInicio)
+
 var partidaIniciada = false
 
 game.onClickDo({ posicion =>
     if (not partidaIniciada) {
         partidaIniciada = true
         game.removeVisual(portada)
-        juego.iniciar()
+        game.removeVisual(ayudaInicio)
+        juego.empezar()
     }
 })
 
