@@ -423,7 +423,7 @@ object profesores {
   }
 
   method gallito(posicion) {
-    const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito, imagen = "Gallo.png")
+    const profesor = new Profesor(position = posicion, nombre = "Gallito", reaccion = reaccionGallito, imagen = "galloDerecha.png", imagenIzquierda = "galloIzquierda.png")
     profesor.agregarComportamiento(new CadaNTicks(n = 2, comportamiento = new CaminarRandom()))
     profesor.agregarComportamiento(new CadaNTicks(n = 8, comportamiento = new LanzarProyectil(tipo = huevo)))
     return self.agregarAlJuego(profesor)

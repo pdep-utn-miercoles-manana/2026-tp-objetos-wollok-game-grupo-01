@@ -16,10 +16,10 @@ import talonario.*
 import sonidos.*
 
 object niveles {
-    const plantaBaja = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(2, 5), fondo = "fodoPlantaBaja.png")
-    const pisoLettuceYOmar = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(5,7))
-    const pisoGallo = new Piso(ancho = 20,largo = 12,posicionDeEntrada = game.at(7, 4))
-    const pisoFilipoYFermin = new Piso(ancho = 20, largo = 12, posicionDeEntrada = game.at(5, 7))
+    const plantaBaja = new Piso(ancho = 20, largo = 12, margen = 1, posicionDeEntrada = game.at(2, 5), fondo = "fondoPlantaBaja.png")
+    const pisoLettuceYOmar = new Piso(ancho = 20, largo = 12, margen = 1, posicionDeEntrada = game.at(5,7))
+    const pisoGallo = new Piso(ancho = 20,largo = 12,margen = 1,posicionDeEntrada = game.at(7, 4))
+    const pisoFilipoYFermin = new Piso(ancho = 20, largo = 12, margen = 1, posicionDeEntrada = game.at(5, 7))
     const llaveTercerPiso = new Llave(position = game.at(4, 5))
     const escritorioTercerPiso = new Escritorio(position = game.at(16, 9))
     const llaveSegundoParcial = new Llave(position = game.at(11, 4))
