@@ -1,6 +1,7 @@
 import buscador.*
 import proyectiles.*
 import wollok.game.*
+import sonidos.*
 
 // Pseudoaleatorio propio para que el juego no dependa de Math.random.
 // Es una LCG chica: alcanza para que los profes cambien de dirección.
@@ -314,6 +315,7 @@ class LanzarProyectil {
       position = profesor.position(),
       direccion = self.direccionAlAzar(),
       tipo = tipo))
+    sonidos.efecto("disparo.wav")
   }
 
   method direccionAlAzar() {

@@ -83,10 +83,31 @@ La presentación es **sin mostrar código**. La demo sugerida es:
 - **Flechas**: mover al jugador.
 - **E**: interactuar con escritorios, talonarios y escaleras.
 - **Backspace**: cerrar la guía del talonario.
+- **M**: silenciar o reactivar el audio.
 - **ENTER / ESPACIO / clic**: avanzar en la intro y arrancar la partida.
 
 Objetivo de cada piso: juntar todos los parciales y llegar a la escalera. La planta baja es la
 entrada y no pide parciales. Si el jugador se queda sin vidas, el piso se reinicia.
+
+---
+
+## Audio
+
+La música arranca cuando el jugador hace el primer **ENTER o clic** en la intro, así el
+navegador permite reproducirla. Queda en loop durante la partida, a volumen bajo.
+
+Efectos de sonido:
+
+- Agarrar una llave.
+- Agarrar un parcial.
+- Abrir un escritorio.
+- Subir por la escalera.
+- Disparar.
+- Recibir daño.
+- Ganar la partida.
+
+La música se detiene al ganar. La tecla **M** silencia o reactiva todo el audio. Los sonidos
+están envueltos en `game.running()` para que los tests no intenten reproducir audio.
 
 ---
 
@@ -183,6 +204,8 @@ todos responden `reiniciar()`.
 | `talonario.wlk`, `escritorioConComputadora.wlk`, `pendrive.wlk` | Mecánicas del recorrido. |
 | `bancoFijo.wlk`, `bancoMovil.wlk`, `escaleras.wlk` | Obstáculos y progresión. |
 | `indicadorVidas.wlk` | HUD de vidas. |
+| `sonidos.wlk` | Música de fondo, efectos, mute y guardas para tests. |
+| `sounds/` | Archivos `.wav` de música y efectos. |
 | `*.wtest` | Tests de lógica, integración y gameplay. |
 
 ---
@@ -203,28 +226,8 @@ Para verificar el código:
 wollok lint
 ```
 
-Estado actual: **81 tests pasan** y **lint limpio**.
+Estado actual: **81 tests pasan**, **lint limpio** y **audio integrado**.
 
 ---
 
-## Estado y limitaciones
 
-- La pantalla de inicio tiene **título, trama, controles, menú y animaciones**.
-- El juego tiene **cuatro niveles** y progresión por escalera.
-- Los profesores se mueven y disparan al azar para que la demo sea estable.
-- **“Cargar partida”** está mostrado en el menú como opción deshabilitada; no hay sistema de guardado.
-- La música queda pendiente.
-- La demo principal se puede hacer en planta baja y primer piso; el segundo y el tercero
-  quedan para mostrar la progresión completa.
-
----
-
-## Guion corto para la exposición (5 minutos)
-
-1. **Nombre y juego** (30 s): “Somos el Grupo 01 y el juego se llama November is Coming”.
-2. **Demo** (2 min): pantalla de inicio → planta baja/talonario → llave/escritorio/parcial →
-   escalera.
-3. **Temática** (1 min): noviembre, parciales, profesores, talonario y la facultad.
-4. **Polimorfismo** (1 min): comportamientos, reacciones, proyectiles y movilidad; mismo
-   mensaje, distintas respuestas.
-5. **Cierre** (30 s): cuatro niveles, 81 tests y lo que dejaríamos para la próxima.

@@ -1,4 +1,5 @@
 import wollok.game.*
+import sonidos.*
 
 class Parcial {
     var property position
@@ -14,6 +15,7 @@ class Parcial {
         if (!agarrado) {
             agarrado = true
             game.removeVisual(self)
+            sonidos.efecto("parcial.wav")
         }
     }
 

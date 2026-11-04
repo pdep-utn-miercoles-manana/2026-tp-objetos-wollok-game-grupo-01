@@ -5,6 +5,7 @@ import profesores.*
 import talonario.*
 import pantallaInicio.*
 import indicadorVidas.*
+import sonidos.*
 object juego{
 
     const pisos = []
@@ -16,10 +17,12 @@ object juego{
         pantallaInicio.mostrar()
         keyboard.enter().onPressDo({ self.avanzarInicio() })
         keyboard.space().onPressDo({ self.avanzarInicio() })
+        keyboard.m().onPressDo({ sonidos.alternarMute() })
         game.onClickDo({ posicion => self.avanzarInicio() })
     }
 
     method avanzarInicio() {
+        sonidos.iniciarMusica()
         if (pantallaInicio.enMenu()) {
             self.empezar()
         } else {
@@ -30,6 +33,7 @@ object juego{
     method empezar() {
         if (not empezado) {
             empezado = true
+            sonidos.iniciarMusica()
             pantallaInicio.terminar()
             self.iniciar()
         }
@@ -113,6 +117,8 @@ object juego{
                 not juegoGanado) {
 
              juegoGanado = true
+             sonidos.detenerMusica()
+             sonidos.efecto("ganar.wav")
 
                 if (game.running()) {
                     game.say(jugador, "¡Felicitaciones, probablemente no tengas que ir a final!")

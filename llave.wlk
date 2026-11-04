@@ -1,6 +1,7 @@
 
 import wollok.game.*
 import obstaculos.Obstaculos
+import sonidos.*
 
 class Llave inherits Obstaculos {
     var recogida = false
@@ -15,6 +16,7 @@ class Llave inherits Obstaculos {
         if (!recogida) {
             recogida = true
             game.removeVisual(self)
+            sonidos.efecto("llave.wav")
         }
     }
 
